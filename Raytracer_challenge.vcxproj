@@ -94,6 +94,7 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <CudaCompile Include="src\color.cu" />
     <CudaCompile Include="kernel.cu" />
     <CudaCompile Include="main.cu" />
     <CudaCompile Include="src\point_vector.cu" />
