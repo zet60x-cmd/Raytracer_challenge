@@ -6,7 +6,10 @@ __device__ point::point()
 	this->y = 0.0f;
 	this->z = 0.0f;
 	this->w = 1.0f;
-
+	this->body[0] = 0;
+	this->body[1] = 0;
+	this->body[2] = 0;
+	this->body[3] = 1.0f;
 }
 
 __device__ point::point(float x, float y, float z)
@@ -15,7 +18,10 @@ __device__ point::point(float x, float y, float z)
 	this->y = y;
 	this->z = z;
 	this->w = 1.0f;
-
+	this->body[0] = x;
+	this->body[1] = y;
+	this->body[2] = z;
+	this->body[3] = 1.0f;
 }
 
 __device__ vector::vector()
@@ -24,6 +30,8 @@ __device__ vector::vector()
 	this->y = 0.0f;
 	this->z = 0.0f;
 	this->w = 0.0f;
+	for (int i = 0; i < 4; i++)
+		this->body[i] = 0;
 }
 
 __device__ vector::vector(float x, float y, float z)
@@ -32,6 +40,10 @@ __device__ vector::vector(float x, float y, float z)
 	this->y = y;
 	this->z = z;
 	this->w = 0.0f;
+	this->body[0] = x;
+	this->body[1] = y;
+	this->body[2] = z;
+	this->body[3] = 0.0f;
 }
 
 __device__ bool is_point(const point& p)

@@ -94,12 +94,16 @@
     </CudaCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <CudaCompile Include="src\canvas.cu" />
     <CudaCompile Include="src\color.cu" />
     <CudaCompile Include="kernel.cu" />
     <CudaCompile Include="main.cu" />
+    <CudaCompile Include="src\matrix.cu" />
     <CudaCompile Include="src\point_vector.cu" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="canvas.cuh" />
+    <ClInclude Include="cuda_error.cuh" />
     <ClInclude Include="geometry_operators.cuh" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

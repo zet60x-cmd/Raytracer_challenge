@@ -1,7 +1,9 @@
 #pragma once
 #include "cuda_runtime.h"
 #include "math.h"
+#include <iostream>
 
+#define IDENTITY4x4 square_matrix<4> ({1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1})
 
 class point
 {
@@ -10,6 +12,7 @@ public:
 	float y;
 	float z;
 	float w;
+	float body[4];
 
 	__device__ point();
 
@@ -23,6 +26,7 @@ public:
 	float y;
 	float z;
 	float w;
+	float body[4];
 
 	__device__ vector();
 
@@ -45,6 +49,62 @@ public:
 	__device__ color();
 	
 	__device__ color(float x, float y, float z);
+};
+
+//header only
+template <int size>
+class square_matrix
+{
+public:
+	float matrix[size * size];
+
+	__device__ square_matrix()
+	{
+		for (int i = 0; i < size * size; i++)
+			matrix[i] = 0;
+	}
+
+	__device__ square_matrix(std::initializer_list<float> list)
+	{
+		static_assert(size == 2 || size == 3 || size == 4, "Unsuported matrix size");
+		memcpy(matrix, list.begin(), size * size * sizeof(float));
+	}
+	__device__ float get_element(int row, int column)
+	{
+		assert(row < size && row >= 0);
+		assert(column < size && column >= 0);
+		return matrix[row + column * size];
+	}
+	__device__ bool operator==(const square_matrix<size>& matrix_B) const
+	{
+		bool is_equal = true;
+
+		for (int i = 0; i < size * size; i++)
+		{
+			if (fabs(matrix[i] - matrix_B.matrix[i]) > FLT_EPSILON)
+			{
+				is_equal = false;
+				break;
+			}
+		}
+		return is_equal;
+	}
+
+	//added mostly for debugging purposes
+	__device__ void print_matrix()
+	{
+		for (int column = 0; column < size; column++)
+			printf("%f %f %f %f\n",
+				this->matrix[0 + column * size],
+				this->matrix[1 + column * size],
+				this->matrix[2 + column * size],
+				this->matrix[3 + column * size]);
+	}
+
+	__device__ bool operator!=(const square_matrix<size>& matrix_B) const
+	{
+		return !((*this) == matrix_B);
+	}
 };
 
 __device__ bool is_point(const point& p);
@@ -86,3 +146,27 @@ __device__ color operator*(float a, const color& c);
 __device__ color operator*(const color& c1, const color& c2);
 
 __device__ color operator/(const color& c, float a);
+
+//header only
+template <int size>
+__device__ square_matrix<size> operator*(const square_matrix<size> &A, const square_matrix<size>& B)
+{
+	square_matrix<size> result = square_matrix<size>();
+	for (int column = 0; column < size; column++)
+	{
+		for (int column_B = 0; column_B < size; column_B++)
+		{
+			float sum = 0;
+			for (int row = 0; row < size; row++)
+			{
+				sum += A.matrix[row + size * column] * B.matrix[column_B + size * row];
+			}
+			result.matrix[column_B + column * size] = sum;
+		}
+	}
+	return result;
+}
+
+__device__ vector operator*(const square_matrix<4> & matr, const vector& vec);
+
+__device__ point operator*(const square_matrix<4>& matr, const point& vec);
