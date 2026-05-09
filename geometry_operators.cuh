@@ -3,6 +3,8 @@
 #include "math.h"
 #include <iostream>
 
+#define IDENTITY2x2 square_matrix<2> ({1,0, 0,1})
+#define IDENTITY3x3 square_matrix<3> ({1,0,0, 0,1,0, 0,0,1})
 #define IDENTITY4x4 square_matrix<4> ({1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1})
 
 class point
@@ -90,6 +92,11 @@ public:
 		return is_equal;
 	}
 
+	__device__ bool operator!=(const square_matrix<size>& matrix_B) const
+	{
+		return !((*this) == matrix_B);
+	}
+
 	//added mostly for debugging purposes
 	__device__ void print_matrix()
 	{
@@ -99,11 +106,6 @@ public:
 				this->matrix[1 + column * size],
 				this->matrix[2 + column * size],
 				this->matrix[3 + column * size]);
-	}
-
-	__device__ bool operator!=(const square_matrix<size>& matrix_B) const
-	{
-		return !((*this) == matrix_B);
 	}
 };
 
@@ -165,6 +167,25 @@ __device__ square_matrix<size> operator*(const square_matrix<size> &A, const squ
 		}
 	}
 	return result;
+}
+
+//header only
+template <int size>
+__device__ square_matrix<size> transpose(square_matrix<size> mat)
+{
+	float value_holder = 0;
+	for (int row = 0; row < size; row++)
+	{
+		int stride = 3;
+		for (int column = row + 1; column < size; column++)
+		{
+			value_holder = mat.matrix[column + row * size];
+			mat.matrix[column + row * size] = mat.matrix[column + row * size + stride];
+			mat.matrix[column + row * size + stride] = value_holder;
+			stride += (size - 1);
+		}
+	}
+	return mat;
 }
 
 __device__ vector operator*(const square_matrix<4> & matr, const vector& vec);

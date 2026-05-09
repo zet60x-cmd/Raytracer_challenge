@@ -26,7 +26,7 @@ __global__ void test()
 		8, 6, 4, 1,
 		0, 0, 0, 1
 		});
-	square_matrix<4> mat1 = IDENTITY4x4;
+	square_matrix<4> mat1 = transpose(mat);
 	mat1.print_matrix();
 }
 
