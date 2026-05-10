@@ -6,6 +6,13 @@
 #define IDENTITY2x2 square_matrix<2> ({1,0, 0,1})
 #define IDENTITY3x3 square_matrix<3> ({1,0,0, 0,1,0, 0,0,1})
 #define IDENTITY4x4 square_matrix<4> ({1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1})
+#define TRANSLATION(x, y, z) square_matrix<4> ({1,0,0,x, 0,1,0,y, 0,0,1,z, 0,0,0,1})
+#define SCALING(x, y, z) square_matrix<4> ({x,0,0,0, 0,y,0,0, 0,0,z,0, 0,0,0,1})
+#define ROTATION_X(r) square_matrix<4> ({1,0,0,0, 0,cos(r),-sin(r),0, 0,sin(r),cos(r),0, 0,0,0,1})
+#define ROTATION_Y(r) square_matrix<4> ({cos(r),0,sin(r),0, 0,1,0,0, -sin(r),0,cos(r),0, 0,0,0,1})
+#define ROTATION_Z(r) square_matrix<4> ({cos(r),-sin(r),0,0, sin(r),cos(r),0,0, 0,0,1,0, 0,0,0,1})
+#define SHEAR(x_y, x_z, y_x, y_z, z_x, z_y) square_matrix<4> ({1,x_y,x_z,0, y_x,1,y_z,0, z_x,z_y,1,0, 0,0,0,1})
+#define MATR_EPSILON 0.00001f
 
 class point
 {
@@ -83,7 +90,7 @@ public:
 
 		for (int i = 0; i < size * size; i++)
 		{
-			if (fabs(matrix[i] - matrix_B.matrix[i]) > FLT_EPSILON)
+			if (fabs(matrix[i] - matrix_B.matrix[i]) > MATR_EPSILON)
 			{
 				is_equal = false;
 				break;
@@ -161,7 +168,7 @@ __device__ square_matrix<size> operator*(float a, const square_matrix<size>& mat
 template <int size>
 __device__ square_matrix<size> operator/(const square_matrix<size>& mat, float a)
 {
-	assert(a > FLT_MAX, "zero division");
+	assert(a > MATR_EPSILON, "zero division");
 
 	square_matrix<size> matrix_to_return;
 	for (int i = 0; i < size * size; i++)
@@ -185,6 +192,12 @@ __device__ square_matrix<size> operator*(const square_matrix<size> &A, const squ
 			}
 			result.matrix[column_B + column * size] = sum;
 		}
+	}
+
+	for (int i = 0; i < size * size; i++)
+	{
+		if (fabs(result.matrix[i]) < MATR_EPSILON)
+			result.matrix[i] = 0;
 	}
 	return result;
 }
@@ -236,7 +249,7 @@ __device__ float determinant(const square_matrix<4>& mat);
 template <int size>
 __device__ bool is_invertible(const square_matrix<size>& mat)
 {
-	return (fabs(determinant(mat)) > FLT_EPSILON);
+	return (fabs(determinant(mat)) > MATR_EPSILON);
 }
 
 __device__ square_matrix<3> minor_matrix(const square_matrix<4>& mat, int row_index, int column_index);

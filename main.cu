@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include "canvas.cuh"
+#include "corecrt_math_defines.h"
 
 __global__ void render_to_buffer(int screen_pixel_width, int screen_pixel_height, color* frame_buffer)
 {
@@ -20,14 +21,9 @@ __global__ void render_to_buffer(int screen_pixel_width, int screen_pixel_height
 
 __global__ void test()
 {
-	square_matrix<4> mat({
-		 -2, -8, 3, 5,
-		 -3,  1, 7, 3,
-		  1,  2,-9, 6,
-		 -6,  7, 7,-9
-		});
-	square_matrix<4> mat1 = inverse(mat);
-	print_matrix(mat1);
+	point p(0, 1, 0);
+	point p1 = (ROTATION_Z(float(M_PI) / 2)) * p;
+	printf("%f,%f,%f", p1.x, p1.y, p1.z);
 }
 
 

@@ -11,6 +11,11 @@ __device__ vector operator*(const square_matrix<4>& matr, const vector& vec)
 			matr.matrix[2 + column * 4] * vec.z +
 			matr.matrix[3 + column * 4] * vec.w;
 	}
+	
+	for (int i = 0; i < 4; i++)
+		if (fabs(ret[i]) < MATR_EPSILON)
+			ret[i] = 0;
+
 	return vector(ret[0], ret[1], ret[2]);
 }
 
@@ -25,6 +30,11 @@ __device__ point operator*(const square_matrix<4>& matr, const point& p)
 			matr.matrix[2 + column * 4] * p.z +
 			matr.matrix[3 + column * 4] * p.w;
 	}
+
+	for (int i = 0; i < 4; i++)
+		if (fabs(ret[i]) < MATR_EPSILON)
+			ret[i] = 0;
+
 	return point(ret[0], ret[1], ret[2]);
 }
 
@@ -110,6 +120,9 @@ __device__ square_matrix<4> inverse(const square_matrix<4>& mat)
 {
 	if (is_invertible(mat))
 		return transpose(cofactor_matrix(mat)) / determinant(mat);
+	
+	printf("Matrix is not invertible, identity retrunerd.\n");
+	return IDENTITY4x4;
 }
 // 0, 1, 2, 3 
 // 4, 5, 6, 7
