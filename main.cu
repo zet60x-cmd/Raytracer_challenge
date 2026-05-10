@@ -21,13 +21,13 @@ __global__ void render_to_buffer(int screen_pixel_width, int screen_pixel_height
 __global__ void test()
 {
 	square_matrix<4> mat({
-		1, 2, 3, 4,
-		2, 4, 4, 2,
-		8, 6, 4, 1,
-		0, 0, 0, 1
+		 -2, -8, 3, 5,
+		 -3,  1, 7, 3,
+		  1,  2,-9, 6,
+		 -6,  7, 7,-9
 		});
-	square_matrix<4> mat1 = transpose(mat);
-	mat1.print_matrix();
+	square_matrix<4> mat1 = inverse(mat);
+	print_matrix(mat1);
 }
 
 
@@ -43,8 +43,7 @@ int main()
 
 	//checkCudaErrors(cudaGetLastError());
 	//checkCudaErrors(cudaDeviceSynchronize());
-
-	//std::ofstream image("output.ppm");
+		//std::ofstream image("output.ppm");
 
 	//image << "P3" << std::endl;
 	//image << width << " " << height << std::endl;

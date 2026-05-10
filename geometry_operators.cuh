@@ -97,16 +97,6 @@ public:
 		return !((*this) == matrix_B);
 	}
 
-	//added mostly for debugging purposes
-	__device__ void print_matrix()
-	{
-		for (int column = 0; column < size; column++)
-			printf("%f %f %f %f\n",
-				this->matrix[0 + column * size],
-				this->matrix[1 + column * size],
-				this->matrix[2 + column * size],
-				this->matrix[3 + column * size]);
-	}
 };
 
 __device__ bool is_point(const point& p);
@@ -151,6 +141,36 @@ __device__ color operator/(const color& c, float a);
 
 //header only
 template <int size>
+__device__ square_matrix<size> operator*(const square_matrix<size>& mat, float a)
+{
+	square_matrix<size> matrix_to_return;
+	for (int i = 0; i < size * size; i++)
+		matrix_to_return.matrix[i] = mat.matrix[i] * a;
+	return matrix_to_return;
+}
+
+template <int size>
+__device__ square_matrix<size> operator*(float a, const square_matrix<size>& mat)
+{
+	square_matrix<size> matrix_to_return;
+	for (int i = 0; i < size * size; i++)
+		matrix_to_return.matrix[i] = mat.matrix[i] * a;
+	return matrix_to_return;
+}
+
+template <int size>
+__device__ square_matrix<size> operator/(const square_matrix<size>& mat, float a)
+{
+	assert(a > FLT_MAX, "zero division");
+
+	square_matrix<size> matrix_to_return;
+	for (int i = 0; i < size * size; i++)
+		matrix_to_return.matrix[i] = mat.matrix[i] / a;
+	return matrix_to_return;
+}
+
+//header only
+template <int size>
 __device__ square_matrix<size> operator*(const square_matrix<size> &A, const square_matrix<size>& B)
 {
 	square_matrix<size> result = square_matrix<size>();
@@ -176,7 +196,7 @@ __device__ square_matrix<size> transpose(square_matrix<size> mat)
 	float value_holder = 0;
 	for (int row = 0; row < size; row++)
 	{
-		int stride = 3;
+		int stride = size - 1;
 		for (int column = row + 1; column < size; column++)
 		{
 			value_holder = mat.matrix[column + row * size];
@@ -187,7 +207,40 @@ __device__ square_matrix<size> transpose(square_matrix<size> mat)
 	}
 	return mat;
 }
+//header only
+//added mostly for debugging purposes
+template <int size>
+__device__ void print_matrix(const square_matrix<size>& mat)
+{
+	for (int row = 0; row < size; row++)
+	{
+		for (int column = 0; column < size; column++)
+		{
+			printf("%f ", mat.matrix[column + row * size]);
+		}
+		printf("\n");
+	}
+}
 
 __device__ vector operator*(const square_matrix<4> & matr, const vector& vec);
 
 __device__ point operator*(const square_matrix<4>& matr, const point& vec);
+
+__device__ float determinant(const square_matrix<2>& mat);
+
+__device__ float determinant(const square_matrix<3>& mat);
+
+__device__ float determinant(const square_matrix<4>& mat);
+
+//header only
+template <int size>
+__device__ bool is_invertible(const square_matrix<size>& mat)
+{
+	return (fabs(determinant(mat)) > FLT_EPSILON);
+}
+
+__device__ square_matrix<3> minor_matrix(const square_matrix<4>& mat, int row_index, int column_index);
+
+__device__ square_matrix<4> cofactor_matrix(const square_matrix<4>& mat);
+
+__device__ square_matrix<4> inverse(const square_matrix<4>& mat);
