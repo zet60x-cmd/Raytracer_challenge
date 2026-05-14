@@ -2,6 +2,7 @@
 #include "primitives.cuh"
 #include "assert.h"
 #define DEFAULT_INTERSECTION intersection(FLT_MAX, primitive())
+#define MAX_INTERSECTION_LIST_LEN 16
 
 class intersection
 {
@@ -54,7 +55,7 @@ public:
 
 		if (shortest_distance_index == INT_MAX)
 		{
-			printf("No shortest distance, defaul intersection returned\n");
+			//printf("No shortest distance, defaul intersection returned\n");
 			return DEFAULT_INTERSECTION;
 		}
 

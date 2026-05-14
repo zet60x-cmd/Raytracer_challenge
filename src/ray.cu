@@ -17,21 +17,29 @@ __device__ point ray::position(float t) const
 	return (t * direction + origin);
 }
 
-__device__ intersection_list<2> ray::intersects(const sphere& s) const
+__device__ ray operator*(const square_matrix<4>& m, const ray& r)
 {
-	intersection_list<2> intersections;
-	vector sphere_origin_to_ray_origin = origin - s.origo;
+	return ray(m * r.origin, m * r.direction);
+}
 
-	float a = dot(direction, direction);
-	float b = 2 * dot(direction, sphere_origin_to_ray_origin);
+__device__ intersection_list<MAX_INTERSECTION_LIST_LEN> ray::intersects(const sphere& s) const
+{
+	//print_matrix(s.transform);
+
+	ray r = inverse(s.transform) * (*this);
+	intersection_list<MAX_INTERSECTION_LIST_LEN> intersections;
+	vector sphere_origin_to_ray_origin = r.origin - s.origo;
+
+	float a = dot(r.direction, r.direction);
+	float b = 2 * dot(r.direction, sphere_origin_to_ray_origin);
 	float c = dot(sphere_origin_to_ray_origin, sphere_origin_to_ray_origin) - 1;
 
 	float discriminant = b * b - 4 * a * c;
 
+
 	if (discriminant < 0)
 	{
-		printf("No hits, null returned.");
-		printf("%f", discriminant);
+		//printf("No hits, null returned.\n");
 		return intersections;
 	}
 
