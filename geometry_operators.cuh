@@ -26,6 +26,8 @@ public:
 	__device__ point();
 
 	__device__ point(float x, float y, float z);
+
+	__device__ void print_point() const;
 };
 
 class vector
@@ -46,6 +48,8 @@ public:
 	__device__ float length() const;
 
 	__device__ vector normalize() const;
+
+	__device__ void print_vector() const;
 };
 
 class color
@@ -156,6 +160,7 @@ __device__ square_matrix<size> operator*(const square_matrix<size>& mat, float a
 	return matrix_to_return;
 }
 
+//header only
 template <int size>
 __device__ square_matrix<size> operator*(float a, const square_matrix<size>& mat)
 {

@@ -91,6 +91,11 @@ __device__ point operator-(const point& p, const vector& v)
 				 p.z - v.z);
 }
 
+__device__ void point::print_point() const
+{
+	printf("%f, %f, %f\n", this->x, this->y, this->z);
+}
+
 __device__ vector operator-(const vector& v1, const vector& v2)
 {
 	return vector(v1.x - v2.x,
@@ -144,6 +149,11 @@ __device__ vector vector::normalize() const
 	if (this->length() != 0.0f)
 		return *this;
 	return vector(x, y, z) / (this->length());
+}
+
+__device__ void vector::print_vector() const
+{
+	printf("%f, %f, %f\n", this->x, this->y, this->z);
 }
 
 __device__ float dot(const vector& v1, const vector& v2)

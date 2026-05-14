@@ -3,6 +3,7 @@
 #include <fstream>
 #include "canvas.cuh"
 #include "corecrt_math_defines.h"
+#include "ray.cuh"
 
 __global__ void render_to_buffer(int screen_pixel_width, int screen_pixel_height, color* frame_buffer)
 {
@@ -21,9 +22,20 @@ __global__ void render_to_buffer(int screen_pixel_width, int screen_pixel_height
 
 __global__ void test()
 {
-	point p(0, 1, 0);
-	point p1 = (ROTATION_Z(float(M_PI) / 2)) * p;
-	printf("%f,%f,%f", p1.x, p1.y, p1.z);
+	ray r(point(0, 0, 5), vector(0, 0, 1));
+	sphere s;
+	intersection_list<4> intersections;
+	intersection i1(5, s);
+	intersection i2(7, s);
+	intersection i3(-3, s);
+	intersection i4(2, s);
+
+	intersections.add(i1);
+	intersections.add(i2);
+	intersections.add(i3);
+	intersections.add(i4);
+
+	printf("%f", intersections.hit().intersection_length);
 }
 
 

@@ -98,13 +98,18 @@
     <CudaCompile Include="src\color.cu" />
     <CudaCompile Include="kernel.cu" />
     <CudaCompile Include="main.cu" />
+    <CudaCompile Include="src\intersection.cu" />
     <CudaCompile Include="src\matrix.cu" />
     <CudaCompile Include="src\point_vector.cu" />
+    <CudaCompile Include="src\primitives.cu" />
+    <CudaCompile Include="src\ray.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="canvas.cuh" />
     <ClInclude Include="cuda_error.cuh" />
     <ClInclude Include="geometry_operators.cuh" />
+    <ClInclude Include="primitives.cuh" />
+    <ClInclude Include="ray.cuh" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
