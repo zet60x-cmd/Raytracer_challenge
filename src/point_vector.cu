@@ -179,3 +179,8 @@ __device__ vector cross(const vector& v1, const vector& v2)
 				  v1.z * v2.x - v1.x * v2.z,
 				  v1.x * v2.y - v1.y * v2.x);
 }
+
+__device__ vector reflect(const vector& inbound_vector, const vector& normal)
+{
+	return (inbound_vector - 2 * normal * dot(inbound_vector, normal));
+}

@@ -42,10 +42,10 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\Kamil\Documents\c++\Raytracing_my_implementation\Raytracer_challenge;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\Kamil\Documents\c++\Raytracing_my_implementation\Raytracer_challenge;C:\Users\Kamil\Documents\c++\Raytracing_my_implementation\Raytracer_challenge\headers;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <IncludePath>C:\Users\Kamil\Documents\c++\Raytracing_my_implementation\Raytracer_challenge;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\Kamil\Documents\c++\Raytracing_my_implementation\Raytracer_challenge;C:\Users\Kamil\Documents\c++\Raytracing_my_implementation\Raytracer_challenge\headers;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -105,12 +105,12 @@
     <CudaCompile Include="src\ray.cu" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="canvas.cuh" />
-    <ClInclude Include="cuda_error.cuh" />
-    <ClInclude Include="geometry_operators.cuh" />
-    <ClInclude Include="primitives.cuh" />
-    <ClInclude Include="ray.cuh" />
-    <ClInclude Include="tests.cuh" />
+    <ClInclude Include="headers\canvas.cuh" />
+    <ClInclude Include="headers\cuda_error.cuh" />
+    <ClInclude Include="headers\geometry_operators.cuh" />
+    <ClInclude Include="headers\primitives.cuh" />
+    <ClInclude Include="headers\ray.cuh" />
+    <ClInclude Include="headers\tests.cuh" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

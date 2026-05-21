@@ -266,3 +266,5 @@ __device__ square_matrix<3> minor_matrix(const square_matrix<4>& mat, int row_in
 __device__ square_matrix<4> cofactor_matrix(const square_matrix<4>& mat);
 
 __device__ square_matrix<4> inverse(const square_matrix<4>& mat);
+
+__device__ vector reflect(const vector& inbound_vector,const vector& normal);
