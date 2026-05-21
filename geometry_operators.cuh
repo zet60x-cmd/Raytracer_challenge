@@ -27,6 +27,8 @@ public:
 
 	__device__ point(float x, float y, float z);
 
+	__device__ float operator[](int i) const;
+
 	__device__ void print_point() const;
 };
 
@@ -44,6 +46,8 @@ public:
 	__device__ vector(float x, float y, float z);
 
 	__device__ vector operator-() const;
+
+	__device__ float operator[](int i) const;
 
 	__device__ float length() const;
 

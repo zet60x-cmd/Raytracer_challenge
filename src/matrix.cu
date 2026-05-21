@@ -2,10 +2,10 @@
 
 __device__ vector operator*(const square_matrix<4>& matr, const vector& vec)
 {
-	float ret[4];
+	vector ret;
 	for (int column = 0; column < 3; column++)
 	{
-		ret[column] =
+		ret.body[column] =
 			matr.matrix[0 + column * 4] * vec.x +
 			matr.matrix[1 + column * 4] * vec.y +
 			matr.matrix[2 + column * 4] * vec.z +
@@ -14,7 +14,7 @@ __device__ vector operator*(const square_matrix<4>& matr, const vector& vec)
 	
 	for (int i = 0; i < 4; i++)
 		if (fabs(ret[i]) < MATR_EPSILON)
-			ret[i] = 0;
+			ret.body[i] = 0;
 
 	return vector(ret[0], ret[1], ret[2]);
 }
@@ -119,7 +119,15 @@ __device__ square_matrix<4> cofactor_matrix(const square_matrix<4>& mat)
 __device__ square_matrix<4> inverse(const square_matrix<4>& mat)
 {
 	if (is_invertible(mat))
-		return transpose(cofactor_matrix(mat)) / determinant(mat);
+	{
+		square_matrix<4> return_matrix = transpose(cofactor_matrix(mat)) / determinant(mat);
+		for (int idx = 0; idx < 16; idx++)
+		{
+			if (fabs(return_matrix.matrix[idx]) <= MATR_EPSILON)
+				return_matrix.matrix[idx] = 0;
+		}
+		return return_matrix;
+	}
 	
 	printf("Matrix is not invertible, identity retrunerd.\n");
 	return IDENTITY4x4;

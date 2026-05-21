@@ -46,6 +46,16 @@ __device__ vector::vector(float x, float y, float z)
 	this->body[3] = 0.0f;
 }
 
+__device__ float vector::operator[](int i) const
+{
+	return body[i];
+}
+
+__device__ float point::operator[](int i) const
+{
+	return body[i];
+}
+
 __device__ bool is_point(const point& p)
 {
 	return (p.w == 1.0f);
@@ -146,7 +156,7 @@ __device__ float vector::length() const
 
 __device__ vector vector::normalize() const
 {
-	if (this->length() != 0.0f)
+	if (this->length() == 0.0f)
 		return *this;
 	return vector(x, y, z) / (this->length());
 }

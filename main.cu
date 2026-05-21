@@ -4,6 +4,7 @@
 #include "canvas.cuh"
 #include "corecrt_math_defines.h"
 #include "ray.cuh"
+#include "tests.cuh"
 
 __global__ void render_to_buffer(int screen_pixel_width, int screen_pixel_height, color* frame_buffer, sphere* s)
 {
@@ -20,7 +21,7 @@ __global__ void render_to_buffer(int screen_pixel_width, int screen_pixel_height
 	int pixel_index = j * screen_pixel_width + i;
 	float u = float(i) / float(screen_pixel_width);
 	float v = float(j) / float(screen_pixel_height);
-	ray r(point(0,0,-5), (point(u, v, -3) - point(0,0,-5)).normalize());
+	ray r(point(0,0,-6), (point(u - .5f, v - .5f, -4) - point(0, 0, -6)).normalize());
 	if (r.intersects(sph).hit().intersection_length < FLT_MAX)
 	{
 		frame_buffer[pixel_index] = color(1, 0, 0);
@@ -38,7 +39,7 @@ __global__ void test()
 __global__ void scene_init(sphere* s)
 {
 	new(s) sphere();
-	s->add_transform(TRANSLATION(1.25f, 1.25f, 0));
+	s->add_transform(TRANSLATION(0,0,0));
 }
 
 __global__ void clear_scene(sphere* s)
@@ -49,6 +50,10 @@ __global__ void clear_scene(sphere* s)
 
 int main()
 {
+	tests << <1, 1 >> > ();
+	checkCudaErrors(cudaDeviceSynchronize());
+	return 0;
+
 	int width = 512;
 	int height = 512;
 	color* frame_buffer_ptr = create_fram_buffer(width, height);
@@ -84,7 +89,6 @@ int main()
 
 	image.close();
 	checkCudaErrors(cudaFree(frame_buffer_ptr));
-	//test << <1, 1 >> > ();
 	cudaDeviceSynchronize();
 	clear_scene<<<1,1>>>(sphere_ptr);
 	cudaFree(sphere_ptr);

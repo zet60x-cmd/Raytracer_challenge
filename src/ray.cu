@@ -16,7 +16,8 @@ __device__ point ray::position(float t) const
 {
 	return (t * direction + origin);
 }
-
+// that shit won't cut it for general matrix transformation scaling and rotation need to be
+// treated differently, fix that shit, cunt.
 __device__ ray operator*(const square_matrix<4>& m, const ray& r)
 {
 	return ray(m * r.origin, m * r.direction);

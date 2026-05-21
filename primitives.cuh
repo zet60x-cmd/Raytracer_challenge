@@ -13,4 +13,5 @@ class sphere : public primitive
 public:
 	float radius;
 	__device__ sphere();
+	__device__ vector normal(const point& p) const;
 };

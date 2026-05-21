@@ -110,6 +110,7 @@
     <ClInclude Include="geometry_operators.cuh" />
     <ClInclude Include="primitives.cuh" />
     <ClInclude Include="ray.cuh" />
+    <ClInclude Include="tests.cuh" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
