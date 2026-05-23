@@ -35,6 +35,9 @@ bld/
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
+.sln
+.vcxproj
+.ppm
 # Uncomment if you have tasks that create the project's static files in wwwroot
 #wwwroot/
 
@@ -361,3 +364,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/Raytracer_challenge.vcxproj
+/Raytracer_challenge.vcxproj.filters
+/Raytracer_challenge.sln
+/output.ppm
