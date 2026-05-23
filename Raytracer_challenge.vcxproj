@@ -108,6 +108,8 @@
     <ClInclude Include="headers\canvas.cuh" />
     <ClInclude Include="headers\cuda_error.cuh" />
     <ClInclude Include="headers\geometry_operators.cuh" />
+    <ClInclude Include="headers\light.cuh" />
+    <ClInclude Include="headers\material.cuh" />
     <ClInclude Include="headers\primitives.cuh" />
     <ClInclude Include="headers\ray.cuh" />
     <ClInclude Include="headers\tests.cuh" />

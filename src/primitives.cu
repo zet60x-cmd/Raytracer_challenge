@@ -9,6 +9,7 @@ __device__ sphere::sphere()
 {
 	origo = point(0, 0, 0);
 	radius = 1.0f;
+
 }
 
 __device__ vector sphere::normal(const point& p) const

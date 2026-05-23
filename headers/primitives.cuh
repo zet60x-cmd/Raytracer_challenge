@@ -1,6 +1,6 @@
 #pragma once
 #include "geometry_operators.cuh"
-
+#include "material.cuh"
 class primitive
 {
 public:
@@ -12,6 +12,7 @@ class sphere : public primitive
 {
 public:
 	float radius;
+	material mat;
 	__device__ sphere();
 	__device__ vector normal(const point& p) const;
 };
