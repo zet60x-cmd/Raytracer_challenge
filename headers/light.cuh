@@ -8,6 +8,7 @@ public:
 	color intensity;
 	point position;
 
+	__device__ light() {};
 	__device__ light(const color& col, const point& pos)
 	{
 		intensity = col;

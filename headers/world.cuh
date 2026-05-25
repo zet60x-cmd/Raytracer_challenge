@@ -5,16 +5,17 @@
 #include "light.cuh"
 #include "primitives.cuh"
 
-template <int WORLD_SIZE = 2>
+template <int WORLD_SIZE>
 class world
 {
 public:
 	light main_light;
-	primitive list[WORLD_SIZE];
+	primitive list[WORLD_SIZE  + 2];
+	intersection_list<MAX_INTERSECTION_LIST_LEN> intersected_lengths;
 
 	__device__ world()
 	{
-		main_ligt = light(color(-10, -10, -10), point(1, 1, 1));
+		main_light = light(color(-10, -10, -10), point(1, 1, 1));
 		sphere s1;
 		sphere s2;
 		

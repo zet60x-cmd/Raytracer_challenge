@@ -36,9 +36,14 @@ __global__ void tests()
 		//n.print_vector();
 
 	// Normal on multi-transformed sphere
-		sphere s;
-		square_matrix<4> m = SCALING(1, 0.5f, 1) * ROTATION_Z(float(M_PI)/ 5);
-		s.add_transform(m);
-		vector n = s.normal(point(0, sqrtf(2) / 2, -sqrtf(2) / 2));
-		n.print_vector();
+		//sphere s;
+		//square_matrix<4> m = SCALING(1, 0.5f, 1) * ROTATION_Z(float(M_PI)/ 5);
+		//s.add_transform(m);
+		//vector n = s.normal(point(0, sqrtf(2) / 2, -sqrtf(2) / 2));
+		//n.print_vector();
+	// Ray world intersection
+		world<2> w;
+		ray r(point(0, 0, -5), vector(0, 0, 1));
+		r.intersects(w);
+		printf("%f", w.intersected_lengths.list[0]);
 }
