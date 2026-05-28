@@ -41,9 +41,4 @@ __global__ void tests()
 		//s.add_transform(m);
 		//vector n = s.normal(point(0, sqrtf(2) / 2, -sqrtf(2) / 2));
 		//n.print_vector();
-	// Ray world intersection
-		world<2> w;
-		ray r(point(0, 0, -5), vector(0, 0, 1));
-		r.intersects(w);
-		printf("%f", w.intersected_lengths.list[0]);
 }

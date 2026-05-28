@@ -52,13 +52,13 @@ __device__ color lighting(const material& mat, const light& l, const point& p,
 }
 
 __global__ void render_to_buffer(int screen_pixel_width, int screen_pixel_height, color* frame_buffer,
-	sphere* s, light* l)
+	primitive* s, light* l)
 {
 	int i = threadIdx.x + blockDim.x * blockIdx.x;
 	int j = threadIdx.y + blockDim.y * blockIdx.y;
 	if ((i >= screen_pixel_width) || (j >= screen_pixel_height)) return;
 
-	sphere sph = *s;
+	primitive sph = *s;
 
 	//print_matrix(s->transform);
 
@@ -78,9 +78,9 @@ __global__ void render_to_buffer(int screen_pixel_width, int screen_pixel_height
 		frame_buffer[pixel_index] = color(0, 0, 0);
 }
 
-__global__ void scene_init(sphere* s, material* m, light* l)
+__global__ void scene_init(primitive* s, material* m, light* l)
 {
-	new(s) sphere();
+	new(s) primitive(sphere());
 	s->add_transform(TRANSLATION(0,0,0));
 
 	new(m) material(color(1, 0.2f, 1));
@@ -89,7 +89,7 @@ __global__ void scene_init(sphere* s, material* m, light* l)
 	s->mat = *m;
 }
 
-__global__ void clear_scene(sphere* s, material* m, light* l)
+__global__ void clear_scene(primitive* s, material* m, light* l)
 {
 	delete m;
 	delete s;
@@ -107,8 +107,8 @@ int main()
 	color* frame_buffer_ptr = create_fram_buffer(width, height);
 	
 	//Create a sphere
-	sphere* sphere_ptr;
-	checkCudaErrors(cudaMalloc((void**)&sphere_ptr, sizeof(sphere)));
+	primitive* sphere_ptr;
+	checkCudaErrors(cudaMalloc((void**)&sphere_ptr, sizeof(primitive)));
 	//end Create a sphere
 
 	//Create sphere material

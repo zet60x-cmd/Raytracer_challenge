@@ -23,13 +23,13 @@ __device__ ray operator*(const square_matrix<4>& m, const ray& r)
 	return ray(m * r.origin, m * r.direction);
 }
 
-__device__ intersection_list<MAX_INTERSECTION_LIST_LEN> ray::intersects(const sphere& s) const
+__device__ intersection_list<2> ray::intersects(const primitive& s) const
 {
 	//print_matrix(s.transform);
 
 	ray r = inverse(s.transform) * (*this);
-	intersection_list<MAX_INTERSECTION_LIST_LEN> intersections;
-	vector sphere_origin_to_ray_origin = r.origin - s.origo;
+	intersection_list<2> intersections;
+	vector sphere_origin_to_ray_origin = r.origin - s.p_sphere.center;
 
 	float a = dot(r.direction, r.direction);
 	float b = 2 * dot(r.direction, sphere_origin_to_ray_origin);
