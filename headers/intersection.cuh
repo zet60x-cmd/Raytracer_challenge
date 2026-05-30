@@ -13,15 +13,15 @@ public:
 	__device__ intersection(float t, const primitive& p);
 };
 
-//header only
 struct intersection_list
 {
 public:
 	intersection list[INTERSECTION_LIST_LEN];
-	int index = 0;
+	int size = 0;
 
 	__device__ void print_intersections() const;
 
+	//header only
 	__device__ intersection_list()
 	{
 		for (int i = 0; i < INTERSECTION_LIST_LEN; i++)
@@ -29,23 +29,17 @@ public:
 			list[i] = DEFAULT_INTERSECTION;
 		}
 	}
-	__device__ void add(const intersection& i)
-	{
-		if (index < INTERSECTION_LIST_LEN)
-		{
-			list[index] = i;
-			index++;
-		}
-		else
-			printf("List is full\n");
-	}
+
+	__device__ void add(const intersection& i);
+
+	//header only
 	__device__ intersection hit() const
 	{
-		assert(index != 0);
+		assert(size != 0);
 		float shortest_distance = FLT_MAX;
 		int shortest_distance_index = INT_MAX;
 
-		for (int i = 0; i < index; i++)
+		for (int i = 0; i < size; i++)
 		{
 			if ((list[i].intersection_length < shortest_distance) &&
 				list[i].intersection_length >= 0)
