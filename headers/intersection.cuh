@@ -2,7 +2,7 @@
 #include "primitives.cuh"
 #include "assert.h"
 #define DEFAULT_INTERSECTION intersection(FLT_MAX, primitive())
-#define MAX_INTERSECTION_LIST_LEN 16
+#define INTERSECTION_LIST_LEN 16
 
 class intersection
 {
@@ -14,22 +14,24 @@ public:
 };
 
 //header only
-template <int size>
 struct intersection_list
 {
 public:
-	intersection list[size];
+	intersection list[INTERSECTION_LIST_LEN];
 	int index = 0;
+
+	__device__ void print_intersections() const;
+
 	__device__ intersection_list()
 	{
-		for (int i = 0; i < size; i++)
+		for (int i = 0; i < INTERSECTION_LIST_LEN; i++)
 		{
 			list[i] = DEFAULT_INTERSECTION;
 		}
 	}
 	__device__ void add(const intersection& i)
 	{
-		if (index < size)
+		if (index < INTERSECTION_LIST_LEN)
 		{
 			list[index] = i;
 			index++;

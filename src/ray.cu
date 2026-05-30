@@ -23,7 +23,7 @@ __device__ ray operator*(const square_matrix<4>& m, const ray& r)
 	return ray(m * r.origin, m * r.direction);
 }
 
-__device__ bool ray::intersects(const primitive& s, intersection_list<2>& intersections) const
+__device__ bool ray::intersects(const primitive& s, intersection_list& intersections) const
 {
 	//print_matrix(s.transform);
 
@@ -50,4 +50,15 @@ __device__ bool ray::intersects(const primitive& s, intersection_list<2>& inters
 		intersections.add(inter_2);
 		return true;
 	}
+}
+
+__device__ bool ray::intersects(const world& w, intersection_list& intersect_list) const
+{
+	bool intersect = false;
+	for (int i = 0; i < w.tail_element_index; i++)
+	{
+		if (intersects(w.list[i], intersect_list))
+			intersect = true;
+	}
+	return intersect;
 }

@@ -60,7 +60,7 @@ __global__ void render_to_buffer(int screen_pixel_width, int screen_pixel_height
 
 	primitive sph = *s;
 
-	intersection_list<2> temporary_intersections_holder;
+	intersection_list temporary_intersections_holder;
 
 	//buffer is one dimensional so the way to jump to right thread for a given pixel
 	//is to jump to correct row by j * screen_pixel_width and to correct pixel i in that row
@@ -99,9 +99,9 @@ __global__ void clear_scene(primitive* s, material* m, light* l)
 
 int main()
 {
-	//tests << <1, 1 >> > ();
-	//checkCudaErrors(cudaDeviceSynchronize());
-	//return 0;
+	tests << <1, 1 >> > ();
+	checkCudaErrors(cudaDeviceSynchronize());
+	return 0;
 
 	int width = 512;
 	int height = 512;

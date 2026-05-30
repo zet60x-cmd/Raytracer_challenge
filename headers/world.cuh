@@ -5,15 +5,14 @@
 #include "light.cuh"
 #include "intersection.cuh"
 
-#define DEFAULT_WORLD_SIZE 2
-#define MAX_WORLS_SIZE 100
+#define WORLD_SIZE 100
 
-template <int WORLD_SIZE>
 class world
 {
 public:
 	light main_light;
-	primitive list[WORLD_SIZE  + DEFAULT_WORLD_SIZE];
+	primitive list[WORLD_SIZE];
+	int tail_element_index;
 
 	__device__ world()
 	{
@@ -29,5 +28,6 @@ public:
 
 		list[0] = s1;
 		list[1] = s2;
+		tail_element_index += 2;
 	}
 };
