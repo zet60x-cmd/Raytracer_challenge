@@ -3,6 +3,11 @@
 #include "intersection.cuh"
 #include "world.cuh"
 
+// cross promise with intersection file
+// shity code structure, but it is hard to forsee what 
+//requiremnts book will place on diferent data
+struct intersection_list;
+
 class ray
 {
 public:

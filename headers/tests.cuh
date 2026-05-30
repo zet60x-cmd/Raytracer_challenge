@@ -2,6 +2,7 @@
 #include "device_launch_parameters.h"
 #include <cuda_runtime.h>
 #include "ray.cuh"
+#include "intersection.cuh"
 #include "math.h"
 
 __global__ void tests()
@@ -42,9 +43,17 @@ __global__ void tests()
 		//vector n = s.normal(point(0, sqrtf(2) / 2, -sqrtf(2) / 2));
 		//n.print_vector();
 	// Ray world intersection
-		world w;
-		intersection_list intersections;
-		ray r(point(0, 0, -5), vector(0, 0, 1));
-		r.intersects(w,intersections);
-		intersections.print_intersections();
+		//world w;
+		//intersection_list intersections;
+		//ray r(point(0, 0, -5), vector(0, 0, 1));
+		//r.intersects(w,intersections);
+		//intersections.print_intersections();
+	// Prepared computations
+		ray r{ point{0,0,-5}, vector{0,0,1} };
+		primitive sph{ sphere{} };
+		intersection intrs{ 4, sph };
+		prepared_computation_values computations = prepare_computation(intrs, r);
+		computations.point_of_intersection.print_point();
+		computations.eye_view.print_vector();
+		computations.normal_view.print_vector();
 }

@@ -1,8 +1,14 @@
 #pragma once
 #include "primitives.cuh"
+#include "ray.cuh"
 #include "assert.h"
 #define DEFAULT_INTERSECTION intersection(FLT_MAX, primitive())
 #define INTERSECTION_LIST_LEN 16
+
+// Cross promise with ray file
+// shity code structure, but it is hard to forsee what 
+//requiremnts book will place on diferent data
+class ray;
 
 class intersection
 {
@@ -58,3 +64,14 @@ public:
 		return list[shortest_distance_index];
 	}
 };
+
+struct prepared_computation_values
+{
+	float intersection_length;
+	primitive intersected_object;
+	point point_of_intersection;
+	vector eye_view;
+	vector normal_view;
+};
+
+__device__ prepared_computation_values prepare_computation(const intersection& intrs, const ray& r);

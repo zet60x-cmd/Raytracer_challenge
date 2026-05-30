@@ -115,9 +115,22 @@ __device__ vector operator-(const vector& v1, const vector& v2)
 
 __device__ vector vector::operator-() const
 {
-	return vector(-this->x,
-				  -this->y,
-				  -this->z);
+	vector return_vector
+	{
+		-this->x,
+		-this->y,
+		-this->z
+	};
+
+	// Hardfixing mistake with zero points being negative
+	if (fabs(return_vector.x) <= MATR_EPSILON)
+		return_vector.x = 0;
+	if (fabs(return_vector.y) <= MATR_EPSILON)
+		return_vector.y = 0;
+	if (fabs(return_vector.z) <= MATR_EPSILON)
+		return_vector.z = 0;
+
+	return return_vector;
 }
 
 __device__ vector operator*(const vector& v, float a)

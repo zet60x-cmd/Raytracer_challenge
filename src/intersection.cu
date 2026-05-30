@@ -49,3 +49,15 @@ __device__ void intersection_list::print_intersections()const
 		printf("}\n");
 	}
 }
+
+__device__ prepared_computation_values prepare_computation(const intersection& intrs, const ray& r)
+{
+	prepared_computation_values computations;
+
+	computations.intersection_length = intrs.intersection_length;
+	computations.intersected_object = intrs.intersected_object;
+	computations.point_of_intersection = r.position(computations.intersection_length);
+	computations.eye_view = -r.direction;
+	computations.normal_view = computations.intersected_object.normal(computations.point_of_intersection);
+	return computations;
+}
