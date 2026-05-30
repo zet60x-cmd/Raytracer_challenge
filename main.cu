@@ -60,7 +60,7 @@ __global__ void render_to_buffer(int screen_pixel_width, int screen_pixel_height
 
 	primitive sph = *s;
 
-	//print_matrix(s->transform);
+	intersection_list<2> temporary_intersections_holder;
 
 	//buffer is one dimensional so the way to jump to right thread for a given pixel
 	//is to jump to correct row by j * screen_pixel_width and to correct pixel i in that row
@@ -68,9 +68,10 @@ __global__ void render_to_buffer(int screen_pixel_width, int screen_pixel_height
 	float u = float(i) / float(screen_pixel_width);
 	float v = float(j) / float(screen_pixel_height);
 	ray r(point(0,0,-6), (point(u - .5f, v - .5f, -4) - point(0, 0, -6)).normalize());
-	if (r.intersects(sph).hit().intersection_length < FLT_MAX)
+	if (r.intersects(sph, temporary_intersections_holder))
 	{
-		point point_of_intersection = r.position(r.intersects(sph).hit().intersection_length);
+		point point_of_intersection = r.position(temporary_intersections_holder.hit().intersection_length);
+
 		frame_buffer[pixel_index] = lighting(s->mat, *l, point_of_intersection,
 			-r.direction, s->normal(point_of_intersection));
 	}

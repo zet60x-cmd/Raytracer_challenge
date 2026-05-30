@@ -23,12 +23,11 @@ __device__ ray operator*(const square_matrix<4>& m, const ray& r)
 	return ray(m * r.origin, m * r.direction);
 }
 
-__device__ intersection_list<2> ray::intersects(const primitive& s) const
+__device__ bool ray::intersects(const primitive& s, intersection_list<2>& intersections) const
 {
 	//print_matrix(s.transform);
 
 	ray r = inverse(s.transform) * (*this);
-	intersection_list<2> intersections;
 	vector sphere_origin_to_ray_origin = r.origin - s.p_sphere.center;
 
 	float a = dot(r.direction, r.direction);
@@ -41,12 +40,14 @@ __device__ intersection_list<2> ray::intersects(const primitive& s) const
 	if (discriminant < 0)
 	{
 		//printf("No hits, null returned.\n");
-		return intersections;
+		return false;
 	}
-
-	intersection inter_1 = intersection((-b - sqrt(discriminant)) / (2 * a), s);
-	intersection inter_2 = intersection((-b + sqrt(discriminant)) / (2 * a), s);
-	intersections.add(inter_1);
-	intersections.add(inter_2);
-	return intersections;
+	else
+	{
+		intersection inter_1 = intersection((-b - sqrt(discriminant)) / (2 * a), s);
+		intersection inter_2 = intersection((-b + sqrt(discriminant)) / (2 * a), s);
+		intersections.add(inter_1);
+		intersections.add(inter_2);
+		return true;
+	}
 }
