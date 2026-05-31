@@ -54,10 +54,18 @@ __device__ prepared_computation_values prepare_computation(const intersection& i
 {
 	prepared_computation_values computations;
 
+	computations.is_indiside = false;
 	computations.intersection_length = intrs.intersection_length;
 	computations.intersected_object = intrs.intersected_object;
 	computations.point_of_intersection = r.position(computations.intersection_length);
 	computations.eye_view = -r.direction;
-	computations.normal_view = computations.intersected_object.normal(computations.point_of_intersection);
+	computations.normal_vector = computations.intersected_object.normal(computations.point_of_intersection);
+
+	if (dot(computations.normal_vector, computations.eye_view) < 0)
+	{
+		computations.is_indiside = true;
+		computations.normal_vector = -computations.normal_vector;
+	}
+
 	return computations;
 }

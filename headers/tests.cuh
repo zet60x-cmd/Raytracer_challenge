@@ -49,11 +49,20 @@ __global__ void tests()
 		//r.intersects(w,intersections);
 		//intersections.print_intersections();
 	// Prepared computations
-		ray r{ point{0,0,-5}, vector{0,0,1} };
+		//ray r{ point{0,0,-5}, vector{0,0,1} };
+		//primitive sph{ sphere{} };
+		//intersection intrs{ 4, sph };
+		//prepared_computation_values computations = prepare_computation(intrs, r);
+		//computations.point_of_intersection.print_point();
+		//computations.eye_view.print_vector();
+		//computations.normal_view.print_vector();
+	// Prepared computations is inside test
+		ray r{ point{0,0,0}, vector{1,0,0} };
 		primitive sph{ sphere{} };
-		intersection intrs{ 4, sph };
+		intersection intrs{ 1, sph };
 		prepared_computation_values computations = prepare_computation(intrs, r);
 		computations.point_of_intersection.print_point();
 		computations.eye_view.print_vector();
-		computations.normal_view.print_vector();
+		printf("%d\n", computations.is_indiside);
+		computations.normal_vector.print_vector();
 }
