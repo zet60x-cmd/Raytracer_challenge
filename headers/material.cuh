@@ -5,7 +5,7 @@
 class material
 {
 public:
-	color col;
+	color col{1,1,1};
 	float ambient = 0.1f;
 	float diffuse = 0.9f;
 	float specular = .9f;

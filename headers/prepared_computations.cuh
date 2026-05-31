@@ -19,3 +19,5 @@ __device__ color lighting(const material& mat, const light& l, const point& p,
 __device__ prepared_computation_values prepare_computation(const intersection& intrs, const ray& r);
 
 __device__ color shade_hit(const world& w, const prepared_computation_values& computations);
+
+__device__ color color_at(const world& w, const ray& r);

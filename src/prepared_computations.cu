@@ -69,3 +69,17 @@ __device__ color shade_hit(const world& w, const prepared_computation_values& co
 	return lighting(computations.intersected_object.mat, w.main_light, computations.point_of_intersection,
 		computations.eye_view, computations.normal_vector);
 }
+
+__device__ color color_at(const world& w, const ray& r)
+{
+	intersection_list intersections;
+
+	if (!(r.intersects(w, intersections)))								//ray don't hit anything in the scene
+		return color(0, 0, 0);
+
+	intersection closest_hit = intersections.hit();
+
+	prepared_computation_values computations = prepare_computation(closest_hit, r);
+	
+	return shade_hit(w, computations);
+}

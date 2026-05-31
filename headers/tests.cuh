@@ -65,13 +65,30 @@ __global__ void tests()
 		//printf("%d\n", computations.is_indiside);
 		//computations.normal_vector.print_vector();
 	// Shade hit function
+	
 	//Reminder adjust the return of hit for intersection list!!!!!!!!
-		world w{};
-		intersection_list intrs_list;
-		ray r{ point{0,0,-5}, vector{0,0,1} };
-		r.intersects(w, intrs_list);
-		primitive sph{ intrs_list.list[0].intersected_object };
-		intersection intrs{4, sph};
-		prepared_computation_values computations = prepare_computation(intrs, r);
-		shade_hit(w, computations).print_color();
+		
+		//a)
+		//world w{};
+		//intersection_list intrs_list;
+		//ray r{ point{0,0,-5}, vector{0,0,1} };
+		//r.intersects(w, intrs_list);
+		//primitive sph{ intrs_list.list[0].intersected_object };
+		//intersection intrs{4, sph};
+		//prepared_computation_values computations = prepare_computation(intrs, r);
+		//shade_hit(w, computations).print_color();
+		
+		//b)
+		//world w{};
+		//w.main_light = light{ color(1,1,1), point(0,.25f,0) };
+		//ray r{ point{0,0,0}, vector{0,0,1} };
+		//intersection_list intrs_list;
+		//r.intersects(w, intrs_list);
+		//intrs_list.print_intersections();
+		//primitive sph{ intrs_list.hit().intersected_object};
+		//intersection intrs{ 0.5f, sph };
+		//prepared_computation_values computations = prepare_computation(intrs, r);
+		//shade_hit(w, computations).print_color();
+
+
 }

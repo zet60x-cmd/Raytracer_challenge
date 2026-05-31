@@ -22,15 +22,7 @@ __global__ void render_to_buffer(int screen_pixel_width, int screen_pixel_height
 	float u = float(i) / float(screen_pixel_width);
 	float v = float(j) / float(screen_pixel_height);
 	ray r(point(0,0,-6), (point(u - .5f, v - .5f, -4) - point(0, 0, -6)).normalize());
-	if (r.intersects(*w, temporary_intersections_holder))
-	{
-
-		temporary_computations_holder = prepare_computation(temporary_intersections_holder.hit(), r);
-
-		frame_buffer[pixel_index] = shade_hit(*w, temporary_computations_holder);
-	}
-	else
-		frame_buffer[pixel_index] = color(0, 0, 0);
+	frame_buffer[pixel_index] = color_at(*w, r);
 }
 
 __global__ void scene_init(world* w)
