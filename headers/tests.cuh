@@ -1,8 +1,7 @@
 #pragma once
 #include "device_launch_parameters.h"
 #include <cuda_runtime.h>
-#include "ray.cuh"
-#include "intersection.cuh"
+#include "prepared_computations.cuh"
 #include "math.h"
 
 __global__ void tests()
@@ -57,12 +56,20 @@ __global__ void tests()
 		//computations.eye_view.print_vector();
 		//computations.normal_view.print_vector();
 	// Prepared computations is inside test
-		ray r{ point{0,0,0}, vector{1,0,0} };
-		primitive sph{ sphere{} };
-		intersection intrs{ 1, sph };
+		//ray r{ point{0,0,0}, vector{1,0,0} };
+		//primitive sph{ sphere{} };
+		//intersection intrs{ 1, sph };
+		//prepared_computation_values computations = prepare_computation(intrs, r);
+		//computations.point_of_intersection.print_point();
+		//computations.eye_view.print_vector();
+		//printf("%d\n", computations.is_indiside);
+		//computations.normal_vector.print_vector();
+	// Shade hit function
+		world w{};
+		intersection_list intrs_list;
+		ray r{ point{0,0,-5}, vector{0,0,1} };
+		r.intersects(w, intrs_list);
+		intersection intrs = intrs_list.list[0];
 		prepared_computation_values computations = prepare_computation(intrs, r);
-		computations.point_of_intersection.print_point();
-		computations.eye_view.print_vector();
-		printf("%d\n", computations.is_indiside);
-		computations.normal_vector.print_vector();
+		shade_hit(w, computations).print_color();
 }

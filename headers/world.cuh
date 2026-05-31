@@ -2,8 +2,8 @@
 #pragma once
 
 #include "cuda_runtime.h"
-#include "light.cuh"
 #include "intersection.cuh"
+#include "light.cuh"
 
 #define WORLD_SIZE 100
 
@@ -16,7 +16,7 @@ public:
 
 	__device__ world()
 	{
-		main_light = light(color(-10, -10, -10), point(1, 1, 1));
+		main_light = light(color(1, 1, 1), point(-10, -10, -10));
 		primitive s1{sphere{}};
 		primitive s2{sphere{}};
 		

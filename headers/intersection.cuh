@@ -65,14 +65,4 @@ public:
 	}
 };
 
-struct prepared_computation_values
-{
-	primitive intersected_object;
-	point point_of_intersection;
-	vector eye_view;
-	vector normal_vector;
-	float intersection_length;
-	bool is_indiside;
-};
 
-__device__ prepared_computation_values prepare_computation(const intersection& intrs, const ray& r);

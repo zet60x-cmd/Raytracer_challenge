@@ -66,6 +66,8 @@ public:
 	__device__ color();
 	
 	__device__ color(float x, float y, float z);
+
+	__device__ void print_color() const;
 };
 
 //header only
