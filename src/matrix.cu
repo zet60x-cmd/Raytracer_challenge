@@ -128,7 +128,6 @@ __device__ square_matrix<4> inverse(const square_matrix<4>& mat)
 		}
 		return return_matrix;
 	}
-	
 	printf("Matrix is not invertible, identity retrunerd.\n");
 	return IDENTITY4x4;
 }

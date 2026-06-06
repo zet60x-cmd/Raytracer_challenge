@@ -1,7 +1,6 @@
 #pragma once
 #include "device_launch_parameters.h"
-#include <cuda_runtime.h>
-#include "prepared_computations.cuh"
+#include "camera.cuh"
 #include "math.h"
 
 __global__ void tests()
@@ -90,5 +89,49 @@ __global__ void tests()
 		//prepared_computation_values computations = prepare_computation(intrs, r);
 		//shade_hit(w, computations).print_color();
 
+	// Color at function
+		
+		//a) ray misses
+		//world w;
+		//ray r{ point{0,0,-5}, vector{0,1,0} };
+		//color c = color_at(w, r);
+		//c.print_color();
+		
+		//b) ray hits
+		//world w;
+		//ray r{ point{0,0,-5}, vector{0,0,1} };
+		//color c = color_at(w, r);
+		//c.print_color();
 
+	// Transformation matrix
+		
+		//a) No	change
+		//point from{ 0,0,0 };
+		//point to{ 0,0,-1 };
+		//vector up{ 0,1,0 };
+		//square_matrix<4> tranformation = view_transforamtion(from, to, up);
+		//print_matrix(tranformation);
+
+		//b) Looking back
+		//point from{ 0,0,0 };
+		//point to{ 0,0,1 };
+		//vector up{ 0,1,0 };
+		//square_matrix<4> tranformation = view_transforamtion(from, to, up);
+		//print_matrix(tranformation);
+
+		//c) Moving the world
+		//point from{ 0,0,8 };
+		//point to{ 0,0,0 };
+		//vector up{ 0,1,0 };
+		//square_matrix<4> tranformation = view_transforamtion(from, to, up);
+		//print_matrix(tranformation);
+
+		//d) Arbitrary transformation
+		//point from{ 1,3,2 };
+		//point to{ 4,-2,8 };
+		//vector up{ 1,1,0 };
+		//square_matrix<4> tranformation = view_transforamtion(from, to, up);
+		//print_matrix(tranformation);
+
+	printf("%d", is_invertible(IDENTITY4x4));
 }

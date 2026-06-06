@@ -7,32 +7,34 @@
 #include "prepared_computations.cuh"
 
 __global__ void render_to_buffer(int screen_pixel_width, int screen_pixel_height, color* frame_buffer,
-	world* w)
+	world* w, camera* cam)
 {
 	int i = threadIdx.x + blockDim.x * blockIdx.x;
 	int j = threadIdx.y + blockDim.y * blockIdx.y;
 	if ((i >= screen_pixel_width) || (j >= screen_pixel_height)) return;
 
-	intersection_list temporary_intersections_holder;
-	prepared_computation_values temporary_computations_holder;
-
 	//buffer is one dimensional so the way to jump to right thread for a given pixel
 	//is to jump to correct row by j * screen_pixel_width and to correct pixel i in that row
 	int pixel_index = j * screen_pixel_width + i;
-	float u = float(i) / float(screen_pixel_width);
-	float v = float(j) / float(screen_pixel_height);
-	ray r(point(0,0,-6), (point(u - .5f, v - .5f, -4) - point(0, 0, -6)).normalize());
+	//float u = float(i) / float(screen_pixel_width);
+	//float v = float(j) / float(screen_pixel_height);
+	//ray r(point(0,0,-6), (point(u - .5f, v - .5f, -4) - point(0, 0, -6)).normalize());
+	ray r = ray_to_pixel(*cam, i, j);
 	frame_buffer[pixel_index] = color_at(*w, r);
 }
 
-__global__ void scene_init(world* w)
+__global__ void scene_init(world* w, camera* cam)
 {
 	new(w) world{};
+	new(cam) camera{};
+	*cam = make_camera(512,512,M_PI / 4	);
+	cam->transform = view_transforamtion(point(0,0,-6), point(0,0,0), vector(0,1,0));
 }
 
-__global__ void clear_scene(world* w)
+__global__ void clear_scene(world* w, camera* cam)
 {
 	delete w;
+	delete cam;
 }
 
 int main()
@@ -47,14 +49,16 @@ int main()
 	
 	//Create a sphere
 	world* world_ptr;
+	camera* camera_ptr;
 	checkCudaErrors(cudaMalloc((void**)&world_ptr, sizeof(world)));
+	checkCudaErrors(cudaMalloc((void**)&camera_ptr, sizeof(camera)));
 	//end Create a sphere
 
-	scene_init << <1, 1 >> > (world_ptr);
+	scene_init << <1, 1 >> > (world_ptr, camera_ptr);
 	
 	blocks_threads_collection blocks_threads = define_threads_and_blocks(width, height, 8, 8);
 	render_to_buffer <<<blocks_threads.blocks, blocks_threads.threads>>> (width, height, frame_buffer_ptr,
-		world_ptr);
+		world_ptr, camera_ptr);
 
 	checkCudaErrors(cudaGetLastError());
 	checkCudaErrors(cudaDeviceSynchronize());
@@ -79,7 +83,8 @@ int main()
 	image.close();
 	checkCudaErrors(cudaFree(frame_buffer_ptr));
 	cudaDeviceSynchronize();
-	clear_scene<<<1,1>>>(world_ptr);
+	clear_scene<<<1,1>>>(world_ptr, camera_ptr);
 	cudaFree(world_ptr);
+	cudaFree(camera_ptr);
 	return 0;
 }
