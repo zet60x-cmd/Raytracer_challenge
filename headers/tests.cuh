@@ -1,6 +1,6 @@
 #pragma once
 #include "device_launch_parameters.h"
-#include "camera.cuh"
+//#include "camera.cuh"
 #include "math.h"
 
 __global__ void tests()
@@ -133,5 +133,4 @@ __global__ void tests()
 		//square_matrix<4> tranformation = view_transforamtion(from, to, up);
 		//print_matrix(tranformation);
 
-	printf("%d", is_invertible(IDENTITY4x4));
 }
