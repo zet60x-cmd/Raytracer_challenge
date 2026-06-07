@@ -7,14 +7,17 @@ struct prepared_computation_values
 {
 	primitive intersected_object;
 	point point_of_intersection;
+	point over_point;
 	vector eye_view;
 	vector normal_vector;
 	float intersection_length;
 	bool is_indiside;
 };
 
+__device__ bool is_shadowed(const world& wrld, const point& p);
+
 __device__ color lighting(const material& mat, const light& l, const point& p,
-	const vector& direction_to_viewer, const vector& normal_at_p);
+	const vector& direction_to_viewer, const vector& normal_at_p, bool);
 
 __device__ prepared_computation_values prepare_computation(const intersection& intrs, const ray& r);
 

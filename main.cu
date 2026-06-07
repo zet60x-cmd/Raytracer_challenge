@@ -17,9 +17,6 @@ __global__ void render_to_buffer(int screen_pixel_width, int screen_pixel_height
 	//buffer is one dimensional so the way to jump to right thread for a given pixel
 	//is to jump to correct row by j * screen_pixel_width and to correct pixel i in that row
 	int pixel_index = j * screen_pixel_width + i;
-	//float u = float(i) / float(screen_pixel_width);
-	//float v = float(j) / float(screen_pixel_height);
-	//ray r(point(0,0,-6), (point(u - .5f, v - .5f, -4) - point(0, 0, -6)).normalize());
 	ray r = ray_to_pixel(*cam, i, j);
 	frame_buffer[pixel_index] = color_at(*w, r);
 }
