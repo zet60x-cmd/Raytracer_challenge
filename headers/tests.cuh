@@ -1,6 +1,6 @@
 #pragma once
 #include "device_launch_parameters.h"
-//#include "camera.cuh"
+#include "ray.cuh"
 #include "math.h"
 
 __global__ void tests()
@@ -133,4 +133,11 @@ __global__ void tests()
 		//square_matrix<4> tranformation = view_transforamtion(from, to, up);
 		//print_matrix(tranformation);
 
+	//Plane normal transformed
+		plane pln_floor;
+		primitive floor(pln_floor);
+		intersection_list intrsctn_lst;
+		floor.add_transform(ROTATION_X((float)(M_PI / 2)));
+		ray r{ point(0,0,-5), vector(0,0,1)};
+		printf("%d", r.intersects(floor, intrsctn_lst));
 }

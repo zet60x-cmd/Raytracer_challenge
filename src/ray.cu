@@ -53,10 +53,12 @@ __device__ bool ray::intersects(const primitive& s, intersection_list& intersect
 
 	if (s.type == PLANE)
 	{
-		if (fabs(direction.y) < MATR_EPSILON)
+		ray r = inverse(s.transform) * (*this);
+
+		if (fabs(r.direction.y) < MATR_EPSILON)
 			return false;
 
-		float t = -origin.y / direction.y;
+		float t = -r.origin.y / r.direction.y;
 		intersection intrsctn{ t, s };
 		intersections.add(intrsctn);
 		return true;
