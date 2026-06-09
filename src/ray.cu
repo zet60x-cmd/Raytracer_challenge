@@ -25,29 +25,40 @@ __device__ ray operator*(const square_matrix<4>& m, const ray& r)
 
 __device__ bool ray::intersects(const primitive& s, intersection_list& intersections) const
 {
-	//print_matrix(s.transform);
-
-	ray r = inverse(s.transform) * (*this);
-	vector sphere_origin_to_ray_origin = r.origin - s.p_sphere.center;
-
-	float a = dot(r.direction, r.direction);
-	float b = 2 * dot(r.direction, sphere_origin_to_ray_origin);
-	float c = dot(sphere_origin_to_ray_origin, sphere_origin_to_ray_origin) - 1;
-
-	float discriminant = b * b - 4 * a * c;
-
-
-	if (discriminant < 0)
+	if (s.type == SPHERE)
 	{
-		//printf("No hits, null returned.\n");
-		return false;
+		ray r = inverse(s.transform) * (*this);
+		vector sphere_origin_to_ray_origin = r.origin - s.p_sphere.center;
+
+		float a = dot(r.direction, r.direction);
+		float b = 2 * dot(r.direction, sphere_origin_to_ray_origin);
+		float c = dot(sphere_origin_to_ray_origin, sphere_origin_to_ray_origin) - 1;
+
+		float discriminant = b * b - 4 * a * c;
+
+
+		if (discriminant < 0)
+		{
+			return false;
+		}
+		else
+		{
+			intersection inter_1 = intersection((-b - sqrt(discriminant)) / (2 * a), s);
+			intersection inter_2 = intersection((-b + sqrt(discriminant)) / (2 * a), s);
+			intersections.add(inter_1);
+			intersections.add(inter_2);
+			return true;
+		}
 	}
-	else
+
+	if (s.type == PLANE)
 	{
-		intersection inter_1 = intersection((-b - sqrt(discriminant)) / (2 * a), s);
-		intersection inter_2 = intersection((-b + sqrt(discriminant)) / (2 * a), s);
-		intersections.add(inter_1);
-		intersections.add(inter_2);
+		if (fabs(direction.y) < MATR_EPSILON)
+			return false;
+
+		float t = -origin.y / direction.y;
+		intersection intrsctn{ t, s };
+		intersections.add(intrsctn);
 		return true;
 	}
 }

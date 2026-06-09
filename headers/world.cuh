@@ -40,7 +40,12 @@ public:
 
 	__device__ void world_add_primitive(const primitive& primitive_to_add)
 	{
-		list[tail_element_index] = primitive_to_add;
-		tail_element_index++;
+		if (tail_element_index < WORLD_SIZE)
+		{
+			list[tail_element_index] = primitive_to_add;
+			tail_element_index++;
+		}
+		else
+			printf("World is full.");
 	}
 };

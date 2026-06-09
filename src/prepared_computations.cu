@@ -45,7 +45,7 @@ __device__ color lighting(const material& mat, const light& l, const point& p,
 		vector reflected_direction = reflect(-direction_to_light_source, normal_at_p);
 		cos_eyeVec_reflVec = dot(reflected_direction, direction_to_viewer);
 	}
-	if (cos_eyeVec_reflVec <= 0 || in_shadow == true)
+	if (cos_eyeVec_reflVec <= 0 || in_shadow)
 		specular_contribution = color(0, 0, 0);
 	else
 	{

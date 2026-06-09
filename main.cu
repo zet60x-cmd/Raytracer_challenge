@@ -25,34 +25,41 @@ __global__ void scene_with_a_couple_of_spheres_init(world* w, camera* cam)
 {
 	new(w) world{ light{color(1,1,1),point{-10,10,-10}} };
 
-	sphere sph_floor;
-	sphere sph_left_wall;
-	sphere sph_right_wall;
+	//sphere sph_floor;
+	//sphere sph_left_wall;
+	//sphere sph_right_wall;
 	sphere sph_middle;
 	sphere sph_right;
 	sphere sph_left;
+	plane pln_floor;
 
-	primitive floor(sph_floor);
-	floor.add_transform(SCALING(10, .01f, 10));
+	//primitive floor(sph_floor);
+	//floor.add_transform(SCALING(10, .01f, 10));
+	//floor.mat = material();
+	//floor.mat.col = color(1, .9f, .9f);
+	//floor.mat.specular = 0;
+	//w->world_add_primitive(floor);
+
+	//primitive left_wall(sph_left_wall);
+	//left_wall.add_transform(TRANSLATION(0, 0, 5) * ROTATION_Y(-float(M_PI) / 4) * ROTATION_X(float(M_PI / 2)) *
+	//	SCALING(10, 0.01f, 10));
+	//left_wall.mat = floor.mat;
+	//w->world_add_primitive(left_wall);
+
+	//primitive right_wall(sph_right_wall);
+	//right_wall.add_transform(TRANSLATION(0, 0, 5) * ROTATION_Y(float(M_PI) / 4) * ROTATION_X(float(M_PI / 2)) *
+	//	SCALING(10, 0.01f, 10));
+	//right_wall.mat = floor.mat;
+	//w->world_add_primitive(right_wall);
+
+	primitive floor(pln_floor);
 	floor.mat = material();
 	floor.mat.col = color(1, .9f, .9f);
 	floor.mat.specular = 0;
 	w->world_add_primitive(floor);
 
-	primitive left_wall(sph_left_wall);
-	left_wall.add_transform(TRANSLATION(0, 0, 5) * ROTATION_Y(-float(M_PI) / 4) * ROTATION_X(float(M_PI / 2)) *
-		SCALING(10, 0.01f, 10));
-	left_wall.mat = floor.mat;
-	w->world_add_primitive(left_wall);
-
-	primitive right_wall(sph_right_wall);
-	right_wall.add_transform(TRANSLATION(0, 0, 5) * ROTATION_Y(float(M_PI) / 4) * ROTATION_X(float(M_PI / 2)) *
-		SCALING(10, 0.01f, 10));
-	right_wall.mat = floor.mat;
-	w->world_add_primitive(right_wall);
-
 	primitive middle(sph_middle);
-	middle.add_transform(TRANSLATION(-.5f, 1, .5f));
+	middle.add_transform(TRANSLATION(-.5f, 2, .5f));
 	middle.mat = material();
 	middle.mat.col = color(0.1f, 1, .5f);
 	middle.mat.diffuse = 0.7f;

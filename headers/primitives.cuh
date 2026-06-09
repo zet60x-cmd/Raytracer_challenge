@@ -20,6 +20,12 @@ struct sphere
 	__device__ vector normal(const point& p, square_matrix<4>) const;
 };
 
+struct plane
+{
+	__device__ plane() {};
+	__device__ vector normal(const point& p, square_matrix<4>) const;
+};
+
 struct primitive
 {
 	PrimitiveType type = FREE;
@@ -28,11 +34,13 @@ struct primitive
 
 	__device__ primitive();
 	__device__ primitive(const sphere& s);
+	__device__ primitive(const plane& p);
 	__device__ vector normal(const point& p);
 	__device__ void add_transform(const square_matrix<4>& m);
 	
 	union
 	{
 		sphere p_sphere;
+		plane p_plane;
 	};
 };
