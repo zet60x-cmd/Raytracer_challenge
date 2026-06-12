@@ -1,4 +1,5 @@
 #include "prepared_computations.cuh"
+#define MAX_REFLECTIVE_DEPTH 5
 
 __device__ bool is_shadowed(const world& wrld, const point& p)
 {
@@ -25,12 +26,14 @@ __device__ color lighting(const material& mat, const light& l, const point& p,
 	const vector& direction_to_viewer, const vector& normal_at_p, bool in_shadow)
 {
 	color effective_color = mat.col * l.intensity;
+	
+	vector direction_to_light_source = (l.position - p).normalize();
+	
 	color ambient_contribution = effective_color * mat.ambient;
 
-	vector direction_to_light_source = (l.position - p).normalize();
 	float cos_angle_normalvec_lightvec = dot(direction_to_light_source, normal_at_p);
 
-	color diffuse_contribution;
+	color diffuse_contribution(0, 0, 0);
 	color specular_contribution(0, 0, 0);
 
 	float cos_eyeVec_reflVec = 0;
@@ -45,7 +48,7 @@ __device__ color lighting(const material& mat, const light& l, const point& p,
 		vector reflected_direction = reflect(-direction_to_light_source, normal_at_p);
 		cos_eyeVec_reflVec = dot(reflected_direction, direction_to_viewer);
 	}
-	if (cos_eyeVec_reflVec <= 0 || in_shadow)
+	if (cos_eyeVec_reflVec <= FLT_EPSILON || in_shadow)
 		specular_contribution = color(0, 0, 0);
 	else
 	{
@@ -54,13 +57,6 @@ __device__ color lighting(const material& mat, const light& l, const point& p,
 	}
 
 	color result = ambient_contribution + diffuse_contribution + specular_contribution;
-
-	//without clamping the value highlight turns green 
-	//a good subject for separate inspection of what that is happening
-	result.r = fmin(fmax(result.r, 0.0f), 1.0f);
-	result.g = fmin(fmax(result.g, 0.0f), 1.0f);
-	result.b = fmin(fmax(result.b, 0.0f), 1.0f);
-
 
 	return result;
 }
@@ -84,6 +80,7 @@ __device__ prepared_computation_values prepare_computation(const intersection& i
 	// for some reason stepping approx 0.005f away from surface gives decent results anything less
 	// solves acne for smaller spheres and for non rotated spheres in the test scene but not for scaled rotated spheres
 	computations.over_point = computations.point_of_intersection + 0.005f * computations.normal_vector;
+	computations.reflected_vector = reflect(r.direction, computations.normal_vector);
 
 	return computations;
 }
@@ -91,20 +88,67 @@ __device__ prepared_computation_values prepare_computation(const intersection& i
 __device__ color shade_hit(const world& w, const prepared_computation_values& computations)
 {
 	bool shadowed = is_shadowed(w, computations.over_point);
-	return lighting(computations.intersected_object.mat, w.main_light, computations.point_of_intersection,
+	color surface_color = lighting(computations.intersected_object.mat, w.main_light, computations.point_of_intersection,
 		computations.eye_view, computations.normal_vector, shadowed);
+	return surface_color;
 }
 
 __device__ color color_at(const world& w, const ray& r)
 {
-	intersection_list intersections;
+	color total_color{ 0,0,0 };
+	ray current_ray = r;
+	float reflective_factor = 1;
 
-	if (!(r.intersects(w, intersections)))								//ray don't hit anything in the scene
-		return color(0, 0, 0);
+	for(int reflective_depth = 0; reflective_depth < MAX_REFLECTIVE_DEPTH; reflective_depth++)
+	{
+		intersection_list intersections;
 
-	intersection closest_hit = intersections.hit();
+		if (!(current_ray.intersects(w, intersections)))								//ray don't hit anything in the scene
+			break;
 
-	prepared_computation_values computations = prepare_computation(closest_hit, r);
-	
-	return shade_hit(w, computations);
+		intersection closest_hit = intersections.hit();
+
+		prepared_computation_values computations = prepare_computation(closest_hit, current_ray);
+
+		total_color = total_color +  reflective_factor * shade_hit(w, computations);
+
+		if (fabs(computations.intersected_object.mat.reflective) <= MATR_EPSILON)
+		{
+			break;
+		}
+
+		reflective_factor *= computations.intersected_object.mat.reflective;
+
+		current_ray = ray(computations.over_point, computations.reflected_vector);
+	}
+
+	//Still not sure where the magenta color highlight color is coming from, but clamping seems to sovle the problm
+	// when printing every color everything seems to be in range 0 to 1.
+	//total_color.r = fmin(fmax(total_color.r, 0.0f), 1.0f);
+	//total_color.g = fmin(fmax(total_color.g, 0.0f), 1.0f);
+	//total_color.b = fmin(fmax(total_color.b, 0.0f), 1.0f);
+
+	return total_color;
+
+	//intersection_list intersections;
+
+	//if (!(r.intersects(w, intersections)))								//ray don't hit anything in the scene
+	//	return color(0, 0, 0);
+
+	//intersection closest_hit = intersections.hit();
+
+	//prepared_computation_values computations = prepare_computation(closest_hit, r);
+	//
+	//return shade_hit(w, computations);
 }
+
+//__device__ color reflected_color(const world& wrld, const prepared_computation_values& computations)
+//{
+//	if (fabs(computations.intersected_object.mat.reflective) <= MATR_EPSILON)
+//	{
+//		return color(0, 0, 0);
+//	}
+//	ray reflected_ray = ray(computations.over_point, computations.reflected_vector);
+//	color ref_color = color_at(wrld, reflected_ray);
+//	return ref_color * computations.intersected_object.mat.reflective;
+//}

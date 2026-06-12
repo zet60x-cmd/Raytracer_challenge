@@ -10,6 +10,7 @@ struct prepared_computation_values
 	point over_point;
 	vector eye_view;
 	vector normal_vector;
+	vector reflected_vector;
 	float intersection_length;
 	bool is_indiside;
 };
@@ -24,3 +25,5 @@ __device__ prepared_computation_values prepare_computation(const intersection& i
 __device__ color shade_hit(const world& w, const prepared_computation_values& computations);
 
 __device__ color color_at(const world& w, const ray& r);
+
+//__device__ color reflected_color(const world& wrld, const prepared_computation_values& computations);

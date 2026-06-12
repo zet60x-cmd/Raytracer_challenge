@@ -15,15 +15,16 @@ __global__ void scene_with_a_couple_of_spheres_init(world* w, camera* cam)
 	plane pln_floor;
 
 	primitive floor(pln_floor);
-	floor.add_transform(ROTATION_X((float)(M_PI / 1.5)));
 	floor.mat = material();
 	floor.mat.col = color(1, .9f, .9f);
 	floor.mat.specular = 0;
+	floor.mat.reflective = .5f;
 	w->world_add_primitive(floor);
 
 	primitive middle(sph_middle);
-	middle.add_transform(TRANSLATION(-.5f, 2, .5f));
+	middle.add_transform(TRANSLATION(-.5f, 1, .5f));
 	middle.mat = material();
+	middle.mat.reflective = .5f;
 	middle.mat.col = color(0.1f, 1, .5f);
 	middle.mat.diffuse = 0.7f;
 	middle.mat.specular = 0.3f;

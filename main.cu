@@ -1,9 +1,9 @@
 #include <iostream>
 #include <fstream>
 #include "canvas.cuh"
-//#include "tests.cuh"
 #include "prepared_computations.cuh"
 #include "Scenes.cuh"
+#include "tests.cuh"
 
 __global__ void render_to_buffer(int screen_pixel_width, int screen_pixel_height, color* frame_buffer,
 	world* w, camera* cam)
@@ -60,10 +60,12 @@ int main()
 	{
 		for (int i = 0; i < width; i++)
 		{
-			int pixel_index = j * width + i;
+			size_t pixel_index = j * width + i;
 			int ir = int(255.99 * frame_buffer_ptr[pixel_index].r);
 			int ig = int(255.99 * frame_buffer_ptr[pixel_index].g);
 			int ib = int(255.99 * frame_buffer_ptr[pixel_index].b);
+			if (ir > 255 || ig > 255 || ib > 255)
+				printf("shit");
 			image << ir << " " << ig << " " << ib << std::endl;
 		}
 	}

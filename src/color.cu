@@ -16,7 +16,7 @@ __device__ color::color(float r, float g, float b)
 
 __device__ void color::print_color() const
 {
-	printf("%f, %f, %f", r, g, b);
+	printf("%f, %f, %f \n", r, g, b);
 }
 
 __device__ color operator+(const color& c1, const color& c2)

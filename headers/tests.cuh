@@ -134,10 +134,46 @@ __global__ void tests()
 		//print_matrix(tranformation);
 
 	//Plane normal transformed
-		plane pln_floor;
-		primitive floor(pln_floor);
-		intersection_list intrsctn_lst;
-		floor.add_transform(ROTATION_X((float)(M_PI / 2)));
-		ray r{ point(0,0,-5), vector(0,0,1)};
-		printf("%d", r.intersects(floor, intrsctn_lst));
+		//plane pln_floor;
+		//primitive floor(pln_floor);
+		//intersection_list intrsctn_lst;
+		//floor.add_transform(ROTATION_X((float)(M_PI / 2)));
+		//ray r{ point(0,0,-5), vector(0,0,1)};
+		//printf("%d", r.intersects(floor, intrsctn_lst));
+
+	// Reflection of vector against a plane
+		//plane p{};
+		//intersection_list intrsctn_lst;
+		//ray r{ point(0, 1, -1), vector{0, -sqrtf(2) / 2, sqrtf(2) / 2} };
+		//r.intersects(p, intrsctn_lst);
+		//intersection intrsctn = intrsctn_lst.hit();
+		//prepared_computation_values computations = prepare_computation(intrsctn, r);
+		//computations.reflected_vector.print_vector();
+
+	// Ray striking a non-reflective material
+		//world w;
+		//intersection_list intrsctn_lst;
+		//ray r{ point{0,0,0}, vector{0,0,1} };
+		//r.intersects(w, intrsctn_lst);
+		//intersection intrsctn = intrsctn_lst.hit();
+		//intrsctn.intersected_object.mat.ambient = 1;
+		//prepared_computation_values computations = prepare_computation(intrsctn, r);
+		//color c = reflected_color(w, computations);
+		//c.print_color();
+
+		// Ray striking a reflective material
+		//world w;
+		//plane p;
+		//primitive pln{p};
+		//pln.mat.reflective = .5f;
+		//pln.add_transform(TRANSLATION(0, -1, 0));
+		//w.world_add_primitive(pln);
+		//intersection_list intrsctn_lst;
+		//ray r{ point{0,0,-3}, vector{0, -sqrtf(2) / 2, sqrtf(2) / 2} };
+		//r.intersects(w, intrsctn_lst);
+		//intersection intrsctn = intrsctn_lst.hit();
+		//intrsctn.intersected_object.mat.ambient = 1;
+		//prepared_computation_values computations = prepare_computation(intrsctn, r);
+		//color c = reflected_color(w, computations);
+		//c.print_color();
 }
