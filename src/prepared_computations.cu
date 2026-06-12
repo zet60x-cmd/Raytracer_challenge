@@ -122,33 +122,18 @@ __device__ color color_at(const world& w, const ray& r)
 		current_ray = ray(computations.over_point, computations.reflected_vector);
 	}
 
-	//Still not sure where the magenta color highlight color is coming from, but clamping seems to sovle the problm
-	// when printing every color everything seems to be in range 0 to 1.
+	// Clamping to make pixels stay in bounds
 	//total_color.r = fmin(fmax(total_color.r, 0.0f), 1.0f);
 	//total_color.g = fmin(fmax(total_color.g, 0.0f), 1.0f);
 	//total_color.b = fmin(fmax(total_color.b, 0.0f), 1.0f);
 
+	//Reinhard with exposure
+	float exposure = 2.0f;
+	total_color.r *= exposure / (exposure * total_color.r + 1.0f);
+	total_color.g *= exposure / (exposure * total_color.g + 1.0f);
+	total_color.b *= exposure / (exposure * total_color.b + 1.0f);
+
+	
+
 	return total_color;
-
-	//intersection_list intersections;
-
-	//if (!(r.intersects(w, intersections)))								//ray don't hit anything in the scene
-	//	return color(0, 0, 0);
-
-	//intersection closest_hit = intersections.hit();
-
-	//prepared_computation_values computations = prepare_computation(closest_hit, r);
-	//
-	//return shade_hit(w, computations);
 }
-
-//__device__ color reflected_color(const world& wrld, const prepared_computation_values& computations)
-//{
-//	if (fabs(computations.intersected_object.mat.reflective) <= MATR_EPSILON)
-//	{
-//		return color(0, 0, 0);
-//	}
-//	ray reflected_ray = ray(computations.over_point, computations.reflected_vector);
-//	color ref_color = color_at(wrld, reflected_ray);
-//	return ref_color * computations.intersected_object.mat.reflective;
-//}

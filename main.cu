@@ -64,8 +64,8 @@ int main()
 			int ir = int(255.99 * frame_buffer_ptr[pixel_index].r);
 			int ig = int(255.99 * frame_buffer_ptr[pixel_index].g);
 			int ib = int(255.99 * frame_buffer_ptr[pixel_index].b);
-			if (ir > 255 || ig > 255 || ib > 255)
-				printf("shit");
+			//if (ir > 255 || ig > 255 || ib > 255)
+			//	printf("shit");
 			image << ir << " " << ig << " " << ib << std::endl;
 		}
 	}
