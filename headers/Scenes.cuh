@@ -16,7 +16,7 @@ __global__ void scene_with_a_couple_of_spheres_init(world* w, camera* cam)
 
 	primitive floor(pln_floor);
 	floor.mat = material();
-	floor.mat.col = color(1, .9f, .9f);
+	floor.mat.col = color(.2f, .2f, .2f);
 	floor.mat.specular = 0;
 	floor.mat.reflective = .5f;
 	w->world_add_primitive(floor);

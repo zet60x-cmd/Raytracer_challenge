@@ -13,10 +13,11 @@ class ray;
 class intersection
 {
 public:
-	float intersection_length;
 	primitive intersected_object;
+	float intersection_length;
+	primitive* objects_adress = nullptr;
 	__device__ intersection() {};
-	__device__ intersection(float t, const primitive& p);
+	__device__ intersection(float t, const primitive& p, primitive* p_ptr = nullptr);
 };
 
 struct intersection_list
@@ -37,6 +38,8 @@ public:
 	}
 
 	__device__ void add(const intersection& i);
+
+	__device__ void remove(int index_to_remove);
 
 	//header only
 	__device__ intersection hit() const
@@ -62,6 +65,21 @@ public:
 		}
 
 		return list[shortest_distance_index];
+	}
+
+	__device__ int find_simmilar(const intersection& intrsctn_to_find) const
+	{
+		int index = INT_MAX;
+		for (int i = 0; i < size; i++)
+		{
+			if ((intrsctn_to_find.intersected_object.type == list[i].intersected_object.type)
+				&& (intrsctn_to_find.intersection_length == list[i].intersection_length))
+			{
+				index = i;
+				break;
+			}
+		}
+		return index;
 	}
 };
 

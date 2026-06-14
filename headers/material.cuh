@@ -11,11 +11,14 @@ public:
 	float specular = .9f;
 	float shininess = 200;
 	float reflective = 0.0f;
+	float transparency = 0.0f;
+	float refractive_index = 1.0f;
 
 	__device__ material() {};
 
 	__device__ material(const color& col, float ambient,
-		float diffuse, float specular, float shininess, float reflective)
+		float diffuse, float specular, float shininess, float reflective,
+		float transparency, float refractive_index)
 	{
 		this->col = col;
 		this->ambient = ambient;
@@ -23,5 +26,7 @@ public:
 		this->specular = specular;
 		this->shininess = shininess;
 		this->reflective = reflective;
+		this->transparency = transparency;
+		this->refractive_index = refractive_index;
 	}
 };

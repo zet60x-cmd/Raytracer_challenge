@@ -1,6 +1,59 @@
 #include "prepared_computations.cuh"
 #define MAX_REFLECTIVE_DEPTH 5
 
+__device__ void refractive_objects_adresses_list::add(primitive* primitive_to_add_ptr)
+{
+	if (tail == OBJECTS_LIST_SIZE)
+	{
+		printf("list is full");
+		return;
+	}
+	body[tail] = primitive_to_add_ptr;
+	tail++;
+	size++;
+}
+
+__device__ void refractive_objects_adresses_list::remove(int index_to_remove_primitive_at)
+{
+	if (size == 0)
+	{
+		printf("list is empty");
+		return;
+	}
+	if (index_to_remove_primitive_at == OBJECTS_LIST_SIZE - 1)
+	{
+		body[index_to_remove_primitive_at] = nullptr;
+		tail--;
+		size--;
+		return;
+	}
+	for (int i = index_to_remove_primitive_at; i < tail - 1; i++)
+	{
+		body[index_to_remove_primitive_at] = body[index_to_remove_primitive_at + 1];
+	}
+	tail--;
+	size--;
+}
+
+__device__ int refractive_objects_adresses_list::find_element(primitive* primitive_to_find_ptr)
+{
+	for (int i = 0; i < size; i++)
+	{
+		if (body[i] == primitive_to_find_ptr)
+			return i;
+	}
+	return INT_MAX;
+}
+
+__device__ void refractive_objects_adresses_list::print_list()
+{
+	printf("{");
+	for (int i = 0; i < size; i++)
+		printf("%p,\n", body[i]);
+	printf("}\n");
+}
+
+
 __device__ bool is_shadowed(const world& wrld, const point& p)
 {
 	vector world_to_light_vec = wrld.main_light.position - p;
@@ -61,7 +114,8 @@ __device__ color lighting(const material& mat, const light& l, const point& p,
 	return result;
 }
 
-__device__ prepared_computation_values prepare_computation(const intersection& intrs, const ray& r)
+__device__ prepared_computation_values prepare_computation(const intersection& intrs, const ray& r
+	, const intersection_list& all_intersections)
 {
 	prepared_computation_values computations;
 
@@ -81,6 +135,46 @@ __device__ prepared_computation_values prepare_computation(const intersection& i
 	// solves acne for smaller spheres and for non rotated spheres in the test scene but not for scaled rotated spheres
 	computations.over_point = computations.point_of_intersection + 0.005f * computations.normal_vector;
 	computations.reflected_vector = reflect(r.direction, computations.normal_vector);
+
+	// refractive indecies	
+	refractive_objects_adresses_list containers;
+	intersection current_intersection;
+	const primitive* current_object_ptr;
+	for (int i = 0; i < all_intersections.size; i++)
+	{
+		current_intersection = all_intersections.list[i];
+		current_object_ptr = all_intersections.list[i].objects_adress;
+
+		// n1
+		// It is not true intersection comparison but for this particular case will do
+		if ((fabs(current_intersection.intersection_length - intrs.intersection_length) < MATR_EPSILON)
+			&& current_intersection.intersected_object.type == intrs.intersected_object.type)
+		{
+			if (containers.size == 0)
+				computations.n1 = 1.0f;
+			else
+				computations.n1 = containers.body[containers.tail - 1]->mat.refractive_index;
+		}
+		//broke the const promise three times
+		int index_of_element_already_in_containers = containers.find_element((primitive*)current_object_ptr);
+		
+		if (index_of_element_already_in_containers != INT_MAX)
+			containers.remove(containers.find_element((primitive*)current_object_ptr));
+		else
+			containers.add((primitive*)current_object_ptr);
+
+		containers.print_list();
+		// n2
+		if ((fabs(current_intersection.intersection_length - intrs.intersection_length) < MATR_EPSILON)
+			&& current_intersection.intersected_object.type == intrs.intersected_object.type)
+		{
+			if (containers.size == 0)
+				computations.n2 = 1.0f;
+			else
+				computations.n2 = containers.body[containers.tail - 1]->mat.refractive_index;
+			break;
+		}
+	}
 
 	return computations;
 }
@@ -103,16 +197,16 @@ __device__ color color_at(const world& w, const ray& r)
 	{
 		intersection_list intersections;
 
-		if (!(current_ray.intersects(w, intersections)))								//ray don't hit anything in the scene
+		if (!(current_ray.intersects(w, intersections)))							//ray don't hit anything in the scene
 			break;
 
 		intersection closest_hit = intersections.hit();
 
-		prepared_computation_values computations = prepare_computation(closest_hit, current_ray);
+		prepared_computation_values computations = prepare_computation(closest_hit, current_ray, intersections);
 
 		total_color = total_color +  reflective_factor * shade_hit(w, computations);
 
-		if (fabs(computations.intersected_object.mat.reflective) <= MATR_EPSILON)
+		if (fabs(computations.intersected_object.mat.reflective) <= MATR_EPSILON)	//object is not reflective
 		{
 			break;
 		}
@@ -122,16 +216,19 @@ __device__ color color_at(const world& w, const ray& r)
 		current_ray = ray(computations.over_point, computations.reflected_vector);
 	}
 
-	// Clamping to make pixels stay in bounds
-	//total_color.r = fmin(fmax(total_color.r, 0.0f), 1.0f);
-	//total_color.g = fmin(fmax(total_color.g, 0.0f), 1.0f);
-	//total_color.b = fmin(fmax(total_color.b, 0.0f), 1.0f);
+
+	//Make colors stay in bounds 0 to 1
+
+	// Clamping
+	total_color.r = fmin(fmax(total_color.r, 0.0f), 1.0f);
+	total_color.g = fmin(fmax(total_color.g, 0.0f), 1.0f);
+	total_color.b = fmin(fmax(total_color.b, 0.0f), 1.0f);
 
 	//Reinhard with exposure
-	float exposure = 2.0f;
-	total_color.r *= exposure / (exposure * total_color.r + 1.0f);
-	total_color.g *= exposure / (exposure * total_color.g + 1.0f);
-	total_color.b *= exposure / (exposure * total_color.b + 1.0f);
+	//float exposure = 4.0f;
+	//total_color.r *= exposure / (exposure * total_color.r + 1.0f);
+	//total_color.g *= exposure / (exposure * total_color.g + 1.0f);
+	//total_color.b *= exposure / (exposure * total_color.b + 1.0f);
 
 	
 

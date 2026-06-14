@@ -176,4 +176,39 @@ __global__ void tests()
 		//prepared_computation_values computations = prepare_computation(intrsctn, r);
 		//color c = reflected_color(w, computations);
 		//c.print_color();
+
+	// n1 n2 test
+		sphere sph;
+		primitive glass_sphere(sph);
+		glass_sphere.mat.refractive_index = 1.5f;
+		glass_sphere.mat.transparency = 1.0f;
+
+		primitive sphA;
+		sphA.add_transform(SCALING(2, 2, 2));
+		sphA.mat.refractive_index = 1.5f;
+		
+		primitive sphB = glass_sphere;
+		sphB.add_transform(TRANSLATION(0,0,-0.25f));
+		sphB.mat.refractive_index = 2.0f;
+
+		primitive sphC = glass_sphere;
+		sphC.add_transform(TRANSLATION(0, 0, 0.25f));
+		sphC.mat.refractive_index = 2.5f;
+
+		ray r{ point{0,0,-4},vector{0,0,1} };
+		intersection_list xs;
+		xs.add(intersection{ 2, sphA , &sphA});
+		xs.add(intersection{ 2.75f, sphB , &sphB});
+		xs.add(intersection{ 3.25f, sphC , &sphC});
+		xs.add(intersection{ 4.75f, sphB , &sphB});
+		xs.add(intersection{ 5.25f, sphC , &sphC});
+		xs.add(intersection{ 6, sphA , &sphA});
+		prepared_computation_values computations = prepare_computation(xs.list[5], r, xs);
+		printf("n1: %f, n2: %f \n", computations.n1, computations.n2);
+
+
+
+
+
+
 }

@@ -1,10 +1,10 @@
 #include "intersection.cuh"
 
-__device__ intersection::intersection(float t, const primitive& p)
+__device__ intersection::intersection(float t, const primitive& p, primitive* p_ptr)
 {
 	intersection_length = t;
 	intersected_object = p;
-
+	objects_adress = p_ptr;
 }
 
 __device__ void intersection_list::add(const intersection& intersec)
@@ -30,6 +30,21 @@ __device__ void intersection_list::add(const intersection& intersec)
 	}
 	else
 		printf("List is full\n");
+}
+
+__device__ void intersection_list::remove(int index_to_remove)
+{
+	if (index_to_remove == INTERSECTION_LIST_LEN - 1)
+	{
+		list[index_to_remove] = DEFAULT_INTERSECTION;
+		size--;
+		return;
+	}
+	for (int i = index_to_remove; i < size; i++)
+	{
+		list[i] = list[i + 1];
+	}
+	size--;
 }
 
 //For testing and debuggin
