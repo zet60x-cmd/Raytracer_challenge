@@ -43,8 +43,8 @@ __device__ bool ray::intersects(const primitive& s, intersection_list& intersect
 		}
 		else
 		{
-			intersection inter_1 = intersection((-b - sqrt(discriminant)) / (2 * a), s);
-			intersection inter_2 = intersection((-b + sqrt(discriminant)) / (2 * a), s);
+			intersection inter_1 = intersection((-b - sqrt(discriminant)) / (2 * a), s, (primitive *)&s);
+			intersection inter_2 = intersection((-b + sqrt(discriminant)) / (2 * a), s, (primitive *)&s);
 			intersections.add(inter_1);
 			intersections.add(inter_2);
 			return true;
@@ -59,7 +59,7 @@ __device__ bool ray::intersects(const primitive& s, intersection_list& intersect
 			return false;
 
 		float t = -r.origin.y / r.direction.y;
-		intersection intrsctn{ t, s };
+		intersection intrsctn{ t, s , (primitive*) &s};
 		intersections.add(intrsctn);
 		return true;
 	}

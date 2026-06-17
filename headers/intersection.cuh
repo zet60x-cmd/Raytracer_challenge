@@ -2,7 +2,7 @@
 #include "primitives.cuh"
 #include "ray.cuh"
 #include "assert.h"
-#define DEFAULT_INTERSECTION intersection(FLT_MAX, primitive())
+#define DEFAULT_INTERSECTION intersection(FLT_MAX, primitive(), nullptr)
 #define INTERSECTION_LIST_LEN 16
 
 // Cross promise with ray file
@@ -17,7 +17,7 @@ public:
 	float intersection_length;
 	primitive* objects_adress = nullptr;
 	__device__ intersection() {};
-	__device__ intersection(float t, const primitive& p, primitive* p_ptr = nullptr);
+	__device__ intersection(float t, const primitive& p, primitive* p_ptr);
 };
 
 struct intersection_list

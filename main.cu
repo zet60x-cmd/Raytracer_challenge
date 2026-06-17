@@ -27,9 +27,9 @@ __global__ void clear_scene(world* w, camera* cam)
 
 int main()
 {
-	tests << <1, 1 >> > ();
-	checkCudaErrors(cudaDeviceSynchronize());
-	return 0;
+	//tests << <1, 1 >> > ();
+	//checkCudaErrors(cudaDeviceSynchronize());
+	//return 0;
 
 	int width = 512;
 	int height = 512;

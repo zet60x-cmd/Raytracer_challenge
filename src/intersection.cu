@@ -4,7 +4,7 @@ __device__ intersection::intersection(float t, const primitive& p, primitive* p_
 {
 	intersection_length = t;
 	intersected_object = p;
-	objects_adress = p_ptr;
+	objects_adress = (primitive*) &p;
 }
 
 __device__ void intersection_list::add(const intersection& intersec)

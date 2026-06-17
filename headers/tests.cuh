@@ -197,12 +197,12 @@ __global__ void tests()
 
 		ray r{ point{0,0,-4},vector{0,0,1} };
 		intersection_list xs;
-		xs.add(intersection{ 2, sphA , &sphA});
+		xs.add(intersection{ 2,		sphA , &sphA});
 		xs.add(intersection{ 2.75f, sphB , &sphB});
 		xs.add(intersection{ 3.25f, sphC , &sphC});
 		xs.add(intersection{ 4.75f, sphB , &sphB});
 		xs.add(intersection{ 5.25f, sphC , &sphC});
-		xs.add(intersection{ 6, sphA , &sphA});
+		xs.add(intersection{ 6,		sphA , &sphA});
 		prepared_computation_values computations = prepare_computation(xs.list[5], r, xs);
 		printf("n1: %f, n2: %f \n", computations.n1, computations.n2);
 

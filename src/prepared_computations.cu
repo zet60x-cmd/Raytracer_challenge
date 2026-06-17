@@ -1,57 +1,5 @@
 #include "prepared_computations.cuh"
-#define MAX_REFLECTIVE_DEPTH 5
-
-__device__ void refractive_objects_adresses_list::add(primitive* primitive_to_add_ptr)
-{
-	if (tail == OBJECTS_LIST_SIZE)
-	{
-		printf("list is full");
-		return;
-	}
-	body[tail] = primitive_to_add_ptr;
-	tail++;
-	size++;
-}
-
-__device__ void refractive_objects_adresses_list::remove(int index_to_remove_primitive_at)
-{
-	if (size == 0)
-	{
-		printf("list is empty");
-		return;
-	}
-	if (index_to_remove_primitive_at == OBJECTS_LIST_SIZE - 1)
-	{
-		body[index_to_remove_primitive_at] = nullptr;
-		tail--;
-		size--;
-		return;
-	}
-	for (int i = index_to_remove_primitive_at; i < tail - 1; i++)
-	{
-		body[index_to_remove_primitive_at] = body[index_to_remove_primitive_at + 1];
-	}
-	tail--;
-	size--;
-}
-
-__device__ int refractive_objects_adresses_list::find_element(primitive* primitive_to_find_ptr)
-{
-	for (int i = 0; i < size; i++)
-	{
-		if (body[i] == primitive_to_find_ptr)
-			return i;
-	}
-	return INT_MAX;
-}
-
-__device__ void refractive_objects_adresses_list::print_list()
-{
-	printf("{");
-	for (int i = 0; i < size; i++)
-		printf("%p,\n", body[i]);
-	printf("}\n");
-}
+#define MAX_ITERATIVE_DEPTH 5
 
 
 __device__ bool is_shadowed(const world& wrld, const point& p)
@@ -137,20 +85,19 @@ __device__ prepared_computation_values prepare_computation(const intersection& i
 	computations.reflected_vector = reflect(r.direction, computations.normal_vector);
 
 	// refractive indecies	
+	intersection current_intersection = DEFAULT_INTERSECTION;
+	primitive* current_object_ptr = nullptr;
 	refractive_objects_adresses_list containers;
-	intersection current_intersection;
-	const primitive* current_object_ptr;
 	for (int i = 0; i < all_intersections.size; i++)
 	{
 		current_intersection = all_intersections.list[i];
 		current_object_ptr = all_intersections.list[i].objects_adress;
-
 		// n1
 		// It is not true intersection comparison but for this particular case will do
 		if ((fabs(current_intersection.intersection_length - intrs.intersection_length) < MATR_EPSILON)
-			&& current_intersection.intersected_object.type == intrs.intersected_object.type)
+			&& current_object_ptr == intrs.objects_adress)
 		{
-			if (containers.size == 0)
+			if (containers.tail == 0)
 				computations.n1 = 1.0f;
 			else
 				computations.n1 = containers.body[containers.tail - 1]->mat.refractive_index;
@@ -159,16 +106,15 @@ __device__ prepared_computation_values prepare_computation(const intersection& i
 		int index_of_element_already_in_containers = containers.find_element((primitive*)current_object_ptr);
 		
 		if (index_of_element_already_in_containers != INT_MAX)
-			containers.remove(containers.find_element((primitive*)current_object_ptr));
+			containers.remove(index_of_element_already_in_containers);
 		else
 			containers.add((primitive*)current_object_ptr);
 
-		containers.print_list();
 		// n2
 		if ((fabs(current_intersection.intersection_length - intrs.intersection_length) < MATR_EPSILON)
-			&& current_intersection.intersected_object.type == intrs.intersected_object.type)
+			&& current_object_ptr == intrs.objects_adress)
 		{
-			if (containers.size == 0)
+			if (containers.tail == 0)
 				computations.n2 = 1.0f;
 			else
 				computations.n2 = containers.body[containers.tail - 1]->mat.refractive_index;
@@ -193,29 +139,60 @@ __device__ color color_at(const world& w, const ray& r)
 	ray current_ray = r;
 	float reflective_factor = 1;
 
-	for(int reflective_depth = 0; reflective_depth < MAX_REFLECTIVE_DEPTH; reflective_depth++)
+	//for(int reflective_depth = 0; reflective_depth < MAX_ITERATIVE_DEPTH; reflective_depth++)
+	//{
+	//	intersection_list intersections;
+
+	//	if (!(current_ray.intersects(w, intersections)))							//ray don't hit anything in the scene
+	//		break;
+
+	//	intersection closest_hit = intersections.hit();
+
+	//	prepared_computation_values computations = prepare_computation(closest_hit, current_ray, intersections);
+
+	//	total_color = total_color +  reflective_factor * shade_hit(w, computations);
+
+	//	if (fabs(computations.intersected_object.mat.reflective) <= MATR_EPSILON)	//object is not reflective
+	//	{
+	//		break;
+	//	}
+
+	//	reflective_factor *= computations.intersected_object.mat.reflective;
+
+	//	current_ray = ray(computations.over_point, computations.reflected_vector);
+	//}
+	const int stack_size = 1 << MAX_ITERATIVE_DEPTH;
+	ray_stack<stack_size> stack;
+	ray_node current_ray_node = make_ray_node(current_ray, 1, MAX_ITERATIVE_DEPTH);
+	stack.push(current_ray_node);
+
+	while (!(stack.is_empty()))
 	{
+		//stack.print_addresses();
+		current_ray_node = stack.top();
+		current_ray = current_ray_node.r;
+		//current_ray.direction.print_vector();
+		stack.pop();
 		intersection_list intersections;
-
-		if (!(current_ray.intersects(w, intersections)))							//ray don't hit anything in the scene
-			break;
-
+		if (!(current_ray.intersects(w, intersections)))
+			continue;
+		if (current_ray_node.depth <= 0)
+			continue;
+		//total_color.print_color();
 		intersection closest_hit = intersections.hit();
-
 		prepared_computation_values computations = prepare_computation(closest_hit, current_ray, intersections);
-
-		total_color = total_color +  reflective_factor * shade_hit(w, computations);
+		total_color = total_color + current_ray_node.reflectance_refractance_factor * shade_hit(w, computations);
 
 		if (fabs(computations.intersected_object.mat.reflective) <= MATR_EPSILON)	//object is not reflective
 		{
-			break;
+			continue;
 		}
-
-		reflective_factor *= computations.intersected_object.mat.reflective;
-
-		current_ray = ray(computations.over_point, computations.reflected_vector);
+		ray reflected_ray = ray(computations.over_point, computations.reflected_vector);
+		ray_node reflected_node = make_ray_node(reflected_ray,
+			current_ray_node.reflectance_refractance_factor * computations.intersected_object.mat.reflective,
+			current_ray_node.depth - 1);
+		stack.push(reflected_node);
 	}
-
 
 	//Make colors stay in bounds 0 to 1
 

@@ -1,7 +1,7 @@
 #pragma once
 #include <cuda_runtime.h>
 #include "intersection.cuh"
-#define OBJECTS_LIST_SIZE 32
+#include "reflection_refraction_structures.cuh"
 
 struct prepared_computation_values
 {
@@ -15,20 +15,6 @@ struct prepared_computation_values
 	float n1;
 	float n2;
 	bool is_indiside;
-};
-
-// soul purpose of this thing is aiding in finding correct refractive indecies between mediums
-struct refractive_objects_adresses_list
-{
-	primitive* body[OBJECTS_LIST_SIZE];
-	int tail = 0;
-	int size = 0;
-
-	__device__ refractive_objects_adresses_list() {};
-	__device__ void add(primitive* primitive_to_add_ptr);
-	__device__ void remove(int index_to_remove_primitive_at);
-	__device__ int find_element(primitive* primitive_to_find_ptr);
-	__device__ void print_list();
 };
 
 __device__ bool is_shadowed(const world& wrld, const point& p);
