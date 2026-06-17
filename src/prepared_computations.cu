@@ -82,6 +82,7 @@ __device__ prepared_computation_values prepare_computation(const intersection& i
 	// for some reason stepping approx 0.005f away from surface gives decent results anything less
 	// solves acne for smaller spheres and for non rotated spheres in the test scene but not for scaled rotated spheres
 	computations.over_point = computations.point_of_intersection + 0.005f * computations.normal_vector;
+	computations.under_point = computations.point_of_intersection - 0.005f * computations.normal_vector;
 	computations.reflected_vector = reflect(r.direction, computations.normal_vector);
 
 	// refractive indecies	
@@ -183,15 +184,31 @@ __device__ color color_at(const world& w, const ray& r)
 		prepared_computation_values computations = prepare_computation(closest_hit, current_ray, intersections);
 		total_color = total_color + current_ray_node.reflectance_refractance_factor * shade_hit(w, computations);
 
-		if (fabs(computations.intersected_object.mat.reflective) <= MATR_EPSILON)	//object is not reflective
+		//reflections
+		if (fabs(computations.intersected_object.mat.reflective) > MATR_EPSILON)	//object is reflective
 		{
-			continue;
+			ray reflected_ray = ray(computations.over_point, computations.reflected_vector);
+			ray_node reflected_node = make_ray_node(reflected_ray,
+				current_ray_node.reflectance_refractance_factor * computations.intersected_object.mat.reflective,
+				current_ray_node.depth - 1);
+			stack.push(reflected_node);
 		}
-		ray reflected_ray = ray(computations.over_point, computations.reflected_vector);
-		ray_node reflected_node = make_ray_node(reflected_ray,
-			current_ray_node.reflectance_refractance_factor * computations.intersected_object.mat.reflective,
-			current_ray_node.depth - 1);
-		stack.push(reflected_node);
+
+		//refractions
+		float n_ratio = computations.n1 / computations.n2;
+		float cosine_inbound_angle = dot(computations.eye_view, computations.normal_vector);
+		float sine_2_transmitted_angle = n_ratio * n_ratio * (1 - cosine_inbound_angle * cosine_inbound_angle);
+		if (sine_2_transmitted_angle <= 1)								//object is refractive
+		{
+			float cosine_transmitted_angle = sqrtf(1.0f - sine_2_transmitted_angle);
+			vector transmitted_direction = computations.normal_vector * (n_ratio * cosine_inbound_angle
+				- cosine_transmitted_angle) - computations.eye_view * n_ratio;
+			ray refracted_ray = ray(computations.under_point, transmitted_direction);
+			ray_node refracted_node = make_ray_node(refracted_ray,
+				current_ray_node.reflectance_refractance_factor * computations.intersected_object.mat.transparency,
+				current_ray_node.depth - 1);
+			stack.push(refracted_node);
+		}
 	}
 
 	//Make colors stay in bounds 0 to 1

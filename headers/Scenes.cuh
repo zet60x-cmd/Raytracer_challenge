@@ -12,6 +12,7 @@ __global__ void scene_with_a_couple_of_spheres_init(world* w, camera* cam)
 	sphere sph_middle;
 	sphere sph_right;
 	sphere sph_left;
+	sphere sph_front;
 	plane pln_floor;
 
 	primitive floor(pln_floor);
@@ -46,7 +47,16 @@ __global__ void scene_with_a_couple_of_spheres_init(world* w, camera* cam)
 	left.mat.specular = 0.3f;
 	w->world_add_primitive(left);
 
+	primitive front(sph_front);
+	front.add_transform(TRANSLATION(0.0f, 1, -3) * SCALING(.5f, .5f, .5f));
+	front.mat = material();
+	front.mat.diffuse = 0.0f;
+	front.mat.specular = 0.3f;
+	front.mat.transparency = .7f;
+	front.mat.refractive_index = 1.5f;
+	w->world_add_primitive(front);
+
 	new(cam) camera{};
 	*cam = make_camera(512, 512, M_PI / 3);
-	cam->transform = view_transforamtion(point(0, 1.5f, -5), point(0, 0, 0), vector(0, 1, 0));
+	cam->transform = view_transforamtion(point(-1.0f, .5f, -7), point(0, 0, 0), vector(0, 1, 0));
 }

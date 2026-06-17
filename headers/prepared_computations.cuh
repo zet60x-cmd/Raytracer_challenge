@@ -8,6 +8,7 @@ struct prepared_computation_values
 	primitive intersected_object;
 	point point_of_intersection;
 	point over_point;
+	point under_point;
 	vector eye_view;
 	vector normal_vector;
 	vector reflected_vector;
