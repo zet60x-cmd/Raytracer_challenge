@@ -29,3 +29,5 @@ __device__ prepared_computation_values prepare_computation(const intersection& i
 __device__ color shade_hit(const world& w, const prepared_computation_values& computations);
 
 __device__ color color_at(const world& w, const ray& r);
+
+__device__ float schlick(const prepared_computation_values& computations);

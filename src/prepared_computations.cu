@@ -1,6 +1,24 @@
 #include "prepared_computations.cuh"
 #define MAX_ITERATIVE_DEPTH 5
 
+__device__ float schlick(const prepared_computation_values& computations)
+{
+	float cosine = dot(computations.eye_view, computations.normal_vector);
+	if (computations.n1 > computations.n2)
+	{
+		float n = computations.n1 / computations.n2;
+		float sine_2_transmitted_angle = n * n * (1.0f - cosine * cosine);
+		if (sine_2_transmitted_angle > 1.0f)
+			return 1.0f;
+
+		cosine = sqrtf(1.0f - sine_2_transmitted_angle);
+	}
+	float r0 = (computations.n1 - computations.n2) / (computations.n1 + computations.n2);
+	r0 *= r0;
+	float x = (1 - cosine);
+	x = x * x * x * x * x;
+	return r0 + (1 - r0) * x;
+}
 
 __device__ bool is_shadowed(const world& wrld, const point& p)
 {
@@ -138,30 +156,7 @@ __device__ color color_at(const world& w, const ray& r)
 {
 	color total_color{ 0,0,0 };
 	ray current_ray = r;
-	float reflective_factor = 1;
 
-	//for(int reflective_depth = 0; reflective_depth < MAX_ITERATIVE_DEPTH; reflective_depth++)
-	//{
-	//	intersection_list intersections;
-
-	//	if (!(current_ray.intersects(w, intersections)))							//ray don't hit anything in the scene
-	//		break;
-
-	//	intersection closest_hit = intersections.hit();
-
-	//	prepared_computation_values computations = prepare_computation(closest_hit, current_ray, intersections);
-
-	//	total_color = total_color +  reflective_factor * shade_hit(w, computations);
-
-	//	if (fabs(computations.intersected_object.mat.reflective) <= MATR_EPSILON)	//object is not reflective
-	//	{
-	//		break;
-	//	}
-
-	//	reflective_factor *= computations.intersected_object.mat.reflective;
-
-	//	current_ray = ray(computations.over_point, computations.reflected_vector);
-	//}
 	const int stack_size = 1 << MAX_ITERATIVE_DEPTH;
 	ray_stack<stack_size> stack;
 	ray_node current_ray_node = make_ray_node(current_ray, 1, MAX_ITERATIVE_DEPTH);
@@ -184,12 +179,25 @@ __device__ color color_at(const world& w, const ray& r)
 		prepared_computation_values computations = prepare_computation(closest_hit, current_ray, intersections);
 		total_color = total_color + current_ray_node.reflectance_refractance_factor * shade_hit(w, computations);
 
+		// reflections/refractions
+		material current_material = computations.intersected_object.mat;
+		float reflected_schlick = 1.0f;
+		float refracted_schlick = 1.0f;
+
+		if ((current_material.transparency > MATR_EPSILON) && (current_material.reflective > MATR_EPSILON))
+		{
+			reflected_schlick = schlick(computations);
+			refracted_schlick = 1.0f - reflected_schlick;
+		}
+
+
 		//reflections
 		if (fabs(computations.intersected_object.mat.reflective) > MATR_EPSILON)	//object is reflective
 		{
 			ray reflected_ray = ray(computations.over_point, computations.reflected_vector);
 			ray_node reflected_node = make_ray_node(reflected_ray,
-				current_ray_node.reflectance_refractance_factor * computations.intersected_object.mat.reflective,
+				current_ray_node.reflectance_refractance_factor * computations.intersected_object.mat.reflective
+				* reflected_schlick,
 				current_ray_node.depth - 1);
 			stack.push(reflected_node);
 		}
@@ -205,7 +213,8 @@ __device__ color color_at(const world& w, const ray& r)
 				- cosine_transmitted_angle) - computations.eye_view * n_ratio;
 			ray refracted_ray = ray(computations.under_point, transmitted_direction);
 			ray_node refracted_node = make_ray_node(refracted_ray,
-				current_ray_node.reflectance_refractance_factor * computations.intersected_object.mat.transparency,
+				current_ray_node.reflectance_refractance_factor * computations.intersected_object.mat.transparency
+				* refracted_schlick,
 				current_ray_node.depth - 1);
 			stack.push(refracted_node);
 		}
