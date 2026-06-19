@@ -9,20 +9,17 @@ __device__ primitive::primitive() {};
 
 __device__ primitive::primitive(const sphere& s)
 {
-	p_sphere = s;
 	type = SPHERE;
 }
 
 __device__ primitive::primitive(const plane& p)
 {
-	p_plane = p;
 	type = PLANE;
 }
 
-__device__ sphere::sphere()
+__device__ primitive::primitive(const box& b)
 {
-	center = point(0, 0, 0);
-	radius = 1.0f;
+	type = BOX;
 }
 
 __device__ vector sphere::normal(const point& p, square_matrix<4> transform) const

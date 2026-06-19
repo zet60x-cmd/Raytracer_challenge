@@ -28,7 +28,7 @@ __device__ bool ray::intersects(const primitive& s, intersection_list& intersect
 	if (s.type == SPHERE)
 	{
 		ray r = inverse(s.transform) * (*this);
-		vector sphere_origin_to_ray_origin = r.origin - s.p_sphere.center;
+		vector sphere_origin_to_ray_origin = r.origin - point(0,0,0);
 
 		float a = dot(r.direction, r.direction);
 		float b = 2 * dot(r.direction, sphere_origin_to_ray_origin);
