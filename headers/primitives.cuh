@@ -11,6 +11,12 @@ enum PrimitiveType
 	FREE
 };
 
+struct box_min_max
+{
+	float min = FLT_MIN;
+	float max = FLT_MAX;
+};
+
 struct sphere
 {
 	point center;
@@ -26,11 +32,11 @@ struct plane
 
 struct box
 {
-	point min;
-	point max;
 	__device__ box() {};
 	__device__ vector normal(const point& p, square_matrix<4>) const;
 };
+
+__device__ box_min_max check_axis(float origin, float direction);
 
 struct primitive
 {

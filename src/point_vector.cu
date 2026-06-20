@@ -170,7 +170,7 @@ __device__ float vector::length() const
 __device__ vector vector::normalize() const
 {
 	float len = this->length();
-	if (len < MATR_EPSILON)
+	if (len <= MATR_EPSILON)
 		return *this;
 	return vector(x, y, z) / (len);
 }

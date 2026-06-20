@@ -14,6 +14,7 @@ __global__ void scene_with_a_couple_of_spheres_init(world* w, camera* cam)
 	sphere sph_left;
 	sphere sph_front;
 	plane pln_floor;
+	box bx;
 
 	primitive floor(pln_floor);
 	floor.mat = material();
@@ -30,6 +31,16 @@ __global__ void scene_with_a_couple_of_spheres_init(world* w, camera* cam)
 	middle.mat.diffuse = 0.7f;
 	middle.mat.specular = 0.3f;
 	w->world_add_primitive(middle);
+
+	primitive cube(bx);
+	cube.add_transform(SCALING(.4f, .4f, .4f) * ROTATION_Y((float) (M_PI / 4)) * TRANSLATION(2.f, 1, -7.f));
+	cube.mat = material();
+	cube.mat.col = color(0.5f, 0.5f, .5f);
+	cube.mat.diffuse = 0.7f;
+	cube.mat.specular = 0.3f;
+	cube.mat.transparency = .5f;
+	cube.mat.refractive_index = 1.3f;
+	w->world_add_primitive(cube);
 
 	primitive right(sph_right);
 	right.add_transform(TRANSLATION(1.5f, .5f, -.5f) * SCALING(.5f, .5f, .5f));

@@ -51,10 +51,9 @@ __device__ bool ray::intersects(const primitive& s, intersection_list& intersect
 		}
 	}
 
-	if (s.type == PLANE)
+	else if (s.type == PLANE)
 	{
 		ray r = inverse(s.transform) * (*this);
-
 		if (fabs(r.direction.y) < MATR_EPSILON)
 			return false;
 
@@ -63,6 +62,29 @@ __device__ bool ray::intersects(const primitive& s, intersection_list& intersect
 		intersections.add(intrsctn);
 		return true;
 	}
+
+	else if (s.type == BOX)
+	{
+		ray r = inverse(s.transform) * (*this);
+		box_min_max x;
+		box_min_max y;
+		box_min_max z;
+
+		x = check_axis(r.origin.x, r.direction.x);
+		y = check_axis(r.origin.y, r.direction.y);
+		z = check_axis(r.origin.z, r.direction.z);
+
+		float t_min = fmax(fmax(x.min, y.min),z.min);
+		float t_max = fmin(fmin(x.max, y.max), z.max);
+
+		if (t_min > t_max)
+			return false;
+
+		intersections.add(intersection(t_min, s, (primitive*) &s));
+		intersections.add(intersection(t_max, s, (primitive*) &s));
+		return true;	
+	}
+	return false;				// potential bug no custome was value returned;
 }
 
 __device__ bool ray::intersects(const world& w, intersection_list& intersect_list) const
