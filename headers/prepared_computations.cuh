@@ -31,3 +31,4 @@ __device__ color shade_hit(const world& w, const prepared_computation_values& co
 __device__ color color_at(const world& w, const ray& r);
 
 __device__ float schlick(const prepared_computation_values& computations);
+

@@ -4,7 +4,6 @@
 #include "device_launch_parameters.h"
 #include "corecrt_math_defines.h"
 #include "camera.cuh"
-
 __global__ void scene_with_a_couple_of_spheres_init(world* w, camera* cam)
 {
 	new(w) world{ light{color(1,1,1),point{-10,10,-10}} };
@@ -15,13 +14,21 @@ __global__ void scene_with_a_couple_of_spheres_init(world* w, camera* cam)
 	sphere sph_front;
 	plane pln_floor;
 	box bx;
+	triangle tr{ point(0, 1, 0), point(-1, 0, 0), point(1, 0, 0) };
+
+	primitive trngl(tr);
+	trngl.add_transform(TRANSLATION(-.5f, .5, -4.0f) * ROTATION_Y((float) M_PI /3) * ROTATION_X((float)M_PI / 5));
+	trngl.mat = material();
+	trngl.mat.col = color(.2f, .5f, .5f);
+	trngl.mat.diffuse = 0.7f;
+	trngl.mat.specular = 0.5f;
+
 
 	primitive floor(pln_floor);
 	floor.mat = material();
 	floor.mat.col = color(.2f, .2f, .2f);
 	floor.mat.specular = 0;
 	floor.mat.reflective = .5f;
-	w->world_add_primitive(floor);
 
 	primitive middle(sph_middle);
 	middle.add_transform(TRANSLATION(-.5f, 1, .5f));
@@ -30,7 +37,6 @@ __global__ void scene_with_a_couple_of_spheres_init(world* w, camera* cam)
 	middle.mat.col = color(0.1f, 1, .5f);
 	middle.mat.diffuse = 0.7f;
 	middle.mat.specular = 0.3f;
-	w->world_add_primitive(middle);
 
 	primitive cube(bx);
 	cube.add_transform(SCALING(.4f, .4f, .4f) * ROTATION_Y((float) (M_PI / 4)) * TRANSLATION(2.f, 1, -7.f));
@@ -40,7 +46,6 @@ __global__ void scene_with_a_couple_of_spheres_init(world* w, camera* cam)
 	cube.mat.specular = 0.3f;
 	cube.mat.transparency = .5f;
 	cube.mat.refractive_index = 1.3f;
-	w->world_add_primitive(cube);
 
 	primitive right(sph_right);
 	right.add_transform(TRANSLATION(1.5f, .5f, -.5f) * SCALING(.5f, .5f, .5f));
@@ -48,7 +53,6 @@ __global__ void scene_with_a_couple_of_spheres_init(world* w, camera* cam)
 	right.mat.col = color(0.5f, 1, .1f);
 	right.mat.diffuse = 0.7f;
 	right.mat.specular = 0.3f;
-	w->world_add_primitive(right);
 
 	primitive left(sph_left);
 	left.add_transform(TRANSLATION(-1.5f, .33f, -.75f) * SCALING(.33f, .33f, .33f));
@@ -56,7 +60,6 @@ __global__ void scene_with_a_couple_of_spheres_init(world* w, camera* cam)
 	left.mat.col = color(1, .8f, .1f);
 	left.mat.diffuse = 0.7f;
 	left.mat.specular = 0.3f;
-	w->world_add_primitive(left);
 
 	primitive front(sph_front);
 	front.add_transform(TRANSLATION(0.0f, 1, -3) * SCALING(.5f, .5f, .5f));
@@ -65,7 +68,14 @@ __global__ void scene_with_a_couple_of_spheres_init(world* w, camera* cam)
 	front.mat.specular = 0.3f;
 	front.mat.transparency = .7f;
 	front.mat.refractive_index = 1.5f;
+
+	w->world_add_primitive(middle);
 	w->world_add_primitive(front);
+	w->world_add_primitive(left);
+	w->world_add_primitive(right);
+	w->world_add_primitive(cube);
+	w->world_add_primitive(floor);
+	w->world_add_primitive(trngl);
 
 	new(cam) camera{};
 	*cam = make_camera(512, 512, M_PI / 3);

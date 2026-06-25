@@ -38,6 +38,19 @@ struct box
 
 __device__ box_min_max check_axis(float origin, float direction);
 
+
+struct triangle
+{
+	point p1;
+	point p2;
+	point p3;
+	vector edge1;
+	vector edge2;
+	vector norm;
+	__device__ triangle(const point& p1, const point& p2, const point& p3);
+	__device__ vector normal(const point& p ,square_matrix<4> transform) const;
+};
+
 struct primitive
 {
 	PrimitiveType type = FREE;
@@ -48,6 +61,7 @@ struct primitive
 	__device__ primitive(const sphere& s);
 	__device__ primitive(const plane& p);
 	__device__ primitive(const box& b);
+	__device__ primitive(const triangle& t);
 	__device__ vector normal(const point& p);
 	__device__ void add_transform(const square_matrix<4>& m);
 	
@@ -56,5 +70,7 @@ struct primitive
 		sphere p_sphere;
 		plane p_plane;
 		box p_box;
+		triangle p_triangle;
 	};
 };
+

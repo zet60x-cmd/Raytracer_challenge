@@ -1,6 +1,7 @@
 #include "prepared_computations.cuh"
 #define MAX_ITERATIVE_DEPTH 5
 
+
 __device__ float schlick(const prepared_computation_values& computations)
 {
 	float cosine = dot(computations.eye_view, computations.normal_vector);
@@ -71,7 +72,7 @@ __device__ color lighting(const material& mat, const light& l, const point& p,
 		specular_contribution = color(0, 0, 0);
 	else
 	{
-		float factor = powf(cos_eyeVec_reflVec, mat.shininess);
+			float factor = powf(cos_eyeVec_reflVec, mat.shininess);
 		specular_contribution = l.intensity * mat.specular * factor;
 	}
 
@@ -167,14 +168,14 @@ __device__ color color_at(const world& w, const ray& r)
 		//stack.print_addresses();
 		current_ray_node = stack.top();
 		current_ray = current_ray_node.r;
-		//current_ray.direction.print_vector();
 		stack.pop();
+
 		intersection_list intersections;
 		if (!(current_ray.intersects(w, intersections)))
 			continue;
 		if (current_ray_node.depth <= 0)
 			continue;
-		//total_color.print_color();
+
 		intersection closest_hit = intersections.hit();
 		prepared_computation_values computations = prepare_computation(closest_hit, current_ray, intersections);
 		total_color = total_color + current_ray_node.reflectance_refractance_factor * shade_hit(w, computations);

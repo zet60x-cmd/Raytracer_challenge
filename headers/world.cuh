@@ -2,17 +2,17 @@
 #pragma once
 
 #include "cuda_runtime.h"
-#include "primitives.cuh"
 #include "light.cuh"
+#include "primitives.cuh"
 
-#define WORLD_SIZE 100
+#define WORLD_SIZE 20
 
 class world
 {
 public:
 	light main_light;
-	primitive list[WORLD_SIZE];
 	int tail_element_index = 0;
+	primitive list[WORLD_SIZE];
 
 	//default world two sphere one insided another and a point light
 	__device__ world()
@@ -38,7 +38,7 @@ public:
 		this->main_light = main_light;
 	}
 
-	__device__ void world_add_primitive(const primitive& primitive_to_add)
+	__device__ void world_add_primitive(primitive& primitive_to_add)
 	{
 		if (tail_element_index < WORLD_SIZE)
 		{
@@ -46,6 +46,7 @@ public:
 			tail_element_index++;
 		}
 		else
-			printf("World is full.");
+			printf("World is full.\n");
 	}
+
 };

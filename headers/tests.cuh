@@ -1,5 +1,5 @@
 #pragma once
-#include "device_launch_parameters.h"
+#include "bounding_volumes.cuh"
 #include "ray.cuh"
 #include "math.h"
 
@@ -9,7 +9,7 @@ __global__ void tests()
 		//sphere s;
 		//vector n = s.normal(point(1, 0, 0));
 		//n.print_vector();
-	
+
 	// Normal at a point test2
 		//sphere s;
 		//vector n = s.normal(point(0, 0, 1));
@@ -27,7 +27,7 @@ __global__ void tests()
 		//	printf("true");
 		//else
 		//	printf("false");
-	
+
 	// Normal on translated sphere
 		//sphere s;
 		//s.add_transform(TRANSLATION(0, 1, 0));
@@ -64,9 +64,9 @@ __global__ void tests()
 		//printf("%d\n", computations.is_indiside);
 		//computations.normal_vector.print_vector();
 	// Shade hit function
-	
+
 	//Reminder adjust the return of hit for intersection list!!!!!!!!
-		
+
 		//a)
 		//world w{};
 		//intersection_list intrs_list;
@@ -76,7 +76,7 @@ __global__ void tests()
 		//intersection intrs{4, sph};
 		//prepared_computation_values computations = prepare_computation(intrs, r);
 		//shade_hit(w, computations).print_color();
-		
+
 		//b)
 		//world w{};
 		//w.main_light = light{ color(1,1,1), point(0,.25f,0) };
@@ -90,13 +90,13 @@ __global__ void tests()
 		//shade_hit(w, computations).print_color();
 
 	// Color at function
-		
+
 		//a) ray misses
 		//world w;
 		//ray r{ point{0,0,-5}, vector{0,1,0} };
 		//color c = color_at(w, r);
 		//c.print_color();
-		
+
 		//b) ray hits
 		//world w;
 		//ray r{ point{0,0,-5}, vector{0,0,1} };
@@ -104,7 +104,7 @@ __global__ void tests()
 		//c.print_color();
 
 	// Transformation matrix
-		
+
 		//a) No	change
 		//point from{ 0,0,0 };
 		//point to{ 0,0,-1 };
@@ -215,13 +215,78 @@ __global__ void tests()
 		//intersections.print_intersections();
 
 	// Cube normal
-		box bx;
-		primitive cube{ bx };
-		point p{ 2, 2, 1 };
-		vector dir(1, 0, 0);
-		intersection_list intersections;
-		ray r{ p, dir };
-		//vector normal = cube.normal(p);
-		//normal.print_vector();
+		//box bx;
+		//primitive cube{ bx };
+		//point p{ 2, 2, 1 };
+		//vector dir(1, 0, 0);
+		//intersection_list intersections;
+		//ray r{ p, dir };
+		////vector normal = cube.normal(p);
+		////normal.print_vector();
 
+	// groups
+		
+
+	// default aabb
+		//struct aabb bounding_volume;
+		//bounding_volume = aabb_create_default();
+		//aabb_print(bounding_volume);
+	
+	// aabb with defined volumes
+		//struct aabb bounding_volume;
+		//bounding_volume = aabb_create(point(-1, -2, -3), point(3, 2, 1));
+		//aabb_print(bounding_volume);
+
+	// aabb adding point to volume
+		//struct aabb bounding_volume;
+		//bounding_volume = aabb_create_default();
+		//point pnt1 = point(-5, 2, 0);
+		//point pnt2 = point(7, 0, -3);
+		//aabb_add_point(bounding_volume, pnt1);
+		//aabb_add_point(bounding_volume, pnt2);
+		//aabb_print(bounding_volume);
+	
+	// aabb add bounding boxes
+		//struct aabb box1 = aabb_create(point(-5, -2, 0), point(7, 4, 4));
+		//struct aabb box2 = aabb_create(point(8, -7, -2), point(14, 2, 8));
+		//struct aabb sum_of_boxes = aabb_add_boxes(box1, box2);
+		//aabb_print(sum_of_boxes);
+
+	// aabb is point in box
+		//struct aabb box = aabb_create(point(5, -2, 0) ,point(11, 4, 7));
+		//printf("%d", aabb_is_point_in_box(box, point(5, -2, 0)));
+		//printf("%d", aabb_is_point_in_box(box, point(11, 4, 7)));
+		//printf("%d", aabb_is_point_in_box(box, point(8, 1, 3)));
+		//printf("%d", aabb_is_point_in_box(box, point(3, 0, 3)));
+		//printf("%d", aabb_is_point_in_box(box, point(8, -4, 3)));
+		//printf("%d", aabb_is_point_in_box(box, point(8, 1, -1)));
+		//printf("%d", aabb_is_point_in_box(box, point(13, 1, 3)));
+		//printf("%d", aabb_is_point_in_box(box, point(8, 5, 3)));
+		//printf("%d", aabb_is_point_in_box(box, point(8, 1, 8)));
+
+	// triangle intersection
+		//primitive tri{ triangle {point(0,1,0), point{-1,0,0}, point(1,0,0)} };
+		//ray r{ point{0,-1,-2}, vector{0,1,0} };
+		//intersection_list intersections;
+		//r.intersects(tri, intersections);
+		//intersections.print_intersections();
+		
+		//primitive tri{ triangle {point(0,1,0), point{-1,0,0}, point(1,0,0)} };
+		//ray r{ point(1, 1, -2), vector(0, 0, 1) };
+		//intersection_list intersections;
+		//r.intersects(tri, intersections);
+		//intersections.print_intersections();
+
+		//primitive tri{ triangle {point(0,1,0), point{-1,0,0}, point(1,0,0)} };
+		//ray r{ point(0, -1, -2), vector(0, 0, 1) };
+		//intersection_list intersections;
+		//r.intersects(tri, intersections);
+		//intersections.print_intersections();
+
+		//triangle tr = triangle{ point(0,1,0), point{-1,0,0}, point(1,0,0) };
+		//primitive tri{tr};
+		//ray r{ point(0, 0.5, -2), vector(0, 0, 1) };
+		//intersection_list intersections;
+		//r.intersects(tri, intersections);
+		//intersections.print_intersections();
 }

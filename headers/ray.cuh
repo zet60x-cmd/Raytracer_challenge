@@ -1,5 +1,4 @@
 #pragma once
-#include "primitives.cuh"
 #include "intersection.cuh"
 #include "world.cuh"
 

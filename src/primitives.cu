@@ -1,5 +1,15 @@
 #include "primitives.cuh"
 
+__device__ triangle::triangle(const point& p1, const point& p2, const point& p3)
+{
+	this->p1 = p1;
+	this->p2 = p2;
+	this->p3 = p3;
+	edge1 = p2 - p1;
+	edge2 = p3 - p1;
+	norm = cross(edge2, edge1).normalize();
+}
+
 __device__ void primitive::add_transform(const square_matrix<4>& m)
 {
 	transform = m * transform;
@@ -20,6 +30,12 @@ __device__ primitive::primitive(const plane& p)
 __device__ primitive::primitive(const box& b)
 {
 	type = BOX;
+}
+
+__device__ primitive::primitive(const triangle& t)
+{
+	type = TRIANGLE;
+	p_triangle = t;
 }
 
 __device__ box_min_max check_axis(float origin, float direction)
@@ -85,6 +101,12 @@ __device__ vector box::normal(const point& p, square_matrix<4> transform) const
 	return normal_in_world_space.normalize();
 }
 
+__device__ vector triangle::normal(const point& p, square_matrix<4> transform) const
+{
+	point point_in_object_space = inverse(transform) * p;
+	return this->norm;
+}
+
 __device__ vector primitive::normal(const point& p)
 {
 	if (type == SPHERE)
@@ -99,6 +121,7 @@ __device__ vector primitive::normal(const point& p)
 	{
 		return p_box.normal(p, transform);
 	}
-	
+	else if (type == TRIANGLE)
+		return p_triangle.normal(p, transform);
 	return vector(0, 0, 0);		//bug here, didn't return a custom value
 }
