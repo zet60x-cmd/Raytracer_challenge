@@ -29,7 +29,7 @@ __device__ void intersection_list::add(const intersection& intersec)
 		size++;
 	}
 	else
-		printf("List is full\n");
+		printf("Intersection list is full\n");
 }
 
 __device__ void intersection_list::remove(int index_to_remove)

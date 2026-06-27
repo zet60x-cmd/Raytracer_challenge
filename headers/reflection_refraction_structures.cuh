@@ -1,7 +1,7 @@
 #pragma once
 #include <cuda_runtime.h>
 #include "ray.cuh"
-#define OBJECTS_LIST_SIZE 16
+#define OBJECTS_LIST_SIZE 20
 
 struct ray_node
 {

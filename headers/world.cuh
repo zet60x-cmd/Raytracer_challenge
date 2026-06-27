@@ -5,13 +5,13 @@
 #include "light.cuh"
 #include "primitives.cuh"
 
-#define WORLD_SIZE 20
+#define WORLD_SIZE 2100
 
 class world
 {
 public:
 	light main_light;
-	int tail_element_index = 0;
+	size_t tail_element_index = 0;
 	primitive list[WORLD_SIZE];
 
 	//default world two sphere one insided another and a point light
@@ -40,7 +40,7 @@ public:
 
 	__device__ void world_add_primitive(primitive& primitive_to_add)
 	{
-		if (tail_element_index < WORLD_SIZE)
+		if (tail_element_index <= WORLD_SIZE)
 		{
 			list[tail_element_index] = primitive_to_add;
 			tail_element_index++;

@@ -115,7 +115,7 @@ __device__ bool ray::intersects(const world& w, intersection_list& intersect_lis
 {
 	bool intersect = false;
 
-	for (int i = 0; i < w.tail_element_index; i++)
+	for (size_t i = 0; i < w.tail_element_index; i++)
 	{
 		if (intersects(w.list[i], intersect_list))
 			intersect = true;

@@ -1,6 +1,6 @@
 #include "primitives.cuh"
 
-__device__ triangle::triangle(const point& p1, const point& p2, const point& p3)
+__host__ __device__ triangle::triangle(const point& p1, const point& p2, const point& p3)
 {
 	this->p1 = p1;
 	this->p2 = p2;
@@ -103,8 +103,8 @@ __device__ vector box::normal(const point& p, square_matrix<4> transform) const
 
 __device__ vector triangle::normal(const point& p, square_matrix<4> transform) const
 {
-	point point_in_object_space = inverse(transform) * p;
-	return this->norm;
+	vector normal_in_world_space = (transpose(inverse(transform)) * this->norm);
+	return normal_in_world_space.normalize();
 }
 
 __device__ vector primitive::normal(const point& p)

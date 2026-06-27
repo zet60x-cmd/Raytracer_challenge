@@ -13,7 +13,7 @@ __device__ void refractive_objects_adresses_list::add(primitive* primitive_to_ad
 {
 	if (tail == OBJECTS_LIST_SIZE)
 	{
-		printf("list is full");
+		printf("refractive list is full");
 		return;
 	}
 	body[tail] = primitive_to_add_ptr;

@@ -1,25 +1,25 @@
 #include "geometry_operators.cuh"
 
-__device__ color::color()
+__device__ __device__ color::color()
 {
 	this->r = 0.0f;
 	this->g = 0.0f;
 	this->b = 0.0f;
 }
 
-__device__ color::color(float r, float g, float b)
+__device__ __device__ color::color(float r, float g, float b)
 {
 	this->r = r;
 	this->g = g;
 	this->b = b;
 }
 
-__device__ void color::print_color() const
+__device__ __device__ void color::print_color() const
 {
 	printf("%f, %f, %f \n", r, g, b);
 }
 
-__device__ color operator+(const color& c1, const color& c2)
+__device__ __device__ color operator+(const color& c1, const color& c2)
 {
 	return color
 	(
@@ -29,7 +29,7 @@ __device__ color operator+(const color& c1, const color& c2)
 	);
 }
 
-__device__ color operator-(const color& c1, const color& c2)
+__device__ __device__ color operator-(const color& c1, const color& c2)
 {
 	return color
 	(
@@ -39,7 +39,7 @@ __device__ color operator-(const color& c1, const color& c2)
 	);
 }
 
-__device__ color operator*(const color& c, float a)
+__device__ __device__ color operator*(const color& c, float a)
 {
 	return color
 	(
@@ -49,7 +49,7 @@ __device__ color operator*(const color& c, float a)
 	);
 }
 
-__device__ color operator*(float a, const color& c)
+__device__ __device__ color operator*(float a, const color& c)
 {
 	return color
 	(
@@ -59,7 +59,7 @@ __device__ color operator*(float a, const color& c)
 	);
 }
 
-__device__ color operator*(const color& c1, const color& c2)
+__device__ __device__ color operator*(const color& c1, const color& c2)
 {
 	return color
 	(
@@ -69,7 +69,7 @@ __device__ color operator*(const color& c1, const color& c2)
 	);
 }
 
-__device__ color operator/(const color& c, float a)
+__device__ __device__ color operator/(const color& c, float a)
 {
 	return color
 	(

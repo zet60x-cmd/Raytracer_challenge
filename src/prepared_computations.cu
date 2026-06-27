@@ -204,21 +204,25 @@ __device__ color color_at(const world& w, const ray& r)
 		}
 
 		//refractions
-		float n_ratio = computations.n1 / computations.n2;
-		float cosine_inbound_angle = dot(computations.eye_view, computations.normal_vector);
-		float sine_2_transmitted_angle = n_ratio * n_ratio * (1 - cosine_inbound_angle * cosine_inbound_angle);
-		if (sine_2_transmitted_angle <= 1)								//object is refractive
-		{
-			float cosine_transmitted_angle = sqrtf(1.0f - sine_2_transmitted_angle);
-			vector transmitted_direction = computations.normal_vector * (n_ratio * cosine_inbound_angle
-				- cosine_transmitted_angle) - computations.eye_view * n_ratio;
-			ray refracted_ray = ray(computations.under_point, transmitted_direction);
-			ray_node refracted_node = make_ray_node(refracted_ray,
-				current_ray_node.reflectance_refractance_factor * computations.intersected_object.mat.transparency
-				* refracted_schlick,
-				current_ray_node.depth - 1);
-			stack.push(refracted_node);
-		}
+		//Beacuse of the way refractions are computated, bigger (in trinagle count sence) objects
+		// can't be rendererd with refractions.
+		//float n_ratio = computations.n1 / computations.n2;
+		//float cosine_inbound_angle = dot(computations.eye_view, computations.normal_vector);
+		//float sine_2_transmitted_angle = n_ratio * n_ratio * (1 - cosine_inbound_angle * cosine_inbound_angle);
+		//if (computations.intersected_object.type == TRIANGLE)
+		//	sine_2_transmitted_angle = 2;
+		//if (sine_2_transmitted_angle <= 1)								//object is refractive
+		//{
+		//	float cosine_transmitted_angle = sqrtf(1.0f - sine_2_transmitted_angle);
+		//	vector transmitted_direction = computations.normal_vector * (n_ratio * cosine_inbound_angle
+		//		- cosine_transmitted_angle) - computations.eye_view * n_ratio;
+		//	ray refracted_ray = ray(computations.under_point, transmitted_direction);
+		//	ray_node refracted_node = make_ray_node(refracted_ray,
+		//		current_ray_node.reflectance_refractance_factor * computations.intersected_object.mat.transparency
+		//		* refracted_schlick,
+		//		current_ray_node.depth - 1);
+		//	stack.push(refracted_node);
+		//}
 	}
 
 	//Make colors stay in bounds 0 to 1

@@ -47,8 +47,8 @@ struct triangle
 	vector edge1;
 	vector edge2;
 	vector norm;
-	__device__ triangle(const point& p1, const point& p2, const point& p3);
-	__device__ vector normal(const point& p ,square_matrix<4> transform) const;
+	__host__ __device__ triangle(const point& p1, const point& p2, const point& p3);
+	__host__ __device__ vector normal(const point& p ,square_matrix<4> transform) const;
 };
 
 struct primitive
